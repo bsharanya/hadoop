@@ -386,6 +386,9 @@ public abstract class RMContainerRequestor extends RMCommunicator {
   }
   
   protected void addContainerReq(ContainerRequest req) {
+      System.out.println("-******************** Main Code****************");
+      System.out.println(req.attemptID.getTaskId().getId());
+      System.out.println("-******************** Main Code****************");
     // Create resource requests
     for (String host : req.hosts) {
       // Data-local
@@ -418,6 +421,8 @@ public abstract class RMContainerRequestor extends RMCommunicator {
 
   private void addResourceRequest(Priority priority, String resourceName,
       Resource capability) {
+
+      System.out.println("-******************** Resource Main Code****************");
     Map<String, Map<Resource, ResourceRequest>> remoteRequests =
       this.remoteRequestsTable.get(priority);
     if (remoteRequests == null) {

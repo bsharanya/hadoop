@@ -34,6 +34,14 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
     </dependencies>
   </dependencyManagement>
 
+  <dependencies>
+        <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjrt</artifactId>
+            <version>1.8.2</version>
+        </dependency>
+  </dependencies>
+
   <distributionManagement>
     <repository>
       <id>${distMgmtStagingId}</id>
@@ -296,6 +304,25 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
     </pluginManagement>
 
     <plugins>
+        <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>aspectj-maven-plugin</artifactId>
+            <version>1.7</version>
+            <configuration>
+                <showWeaveInfo>true</showWeaveInfo>
+                <source>${project.build.source}</source>
+                <target>${project.build.source}</target>
+                <complianceLevel>1.7</complianceLevel>
+            </configuration>
+            <executions>
+                <execution>
+                    <goals>
+                        <goal>compile</goal>
+                    </goals>
+                </execution>
+            </executions>
+        </plugin>
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>

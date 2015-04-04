@@ -417,7 +417,6 @@ public class ApplicationMasterService extends AbstractService implements
   @Override
   public AllocateResponse allocate(AllocateRequest request)
       throws YarnException, IOException {
-
     AMRMTokenIdentifier amrmTokenIdentifier = authorizeRequest();
 
     ApplicationAttemptId appAttemptId =
@@ -488,9 +487,19 @@ public class ApplicationMasterService extends AbstractService implements
       RMApp app =
           this.rmContext.getRMApps().get(applicationId);
       
-      // set label expression for Resource Requests if resourceName=ANY 
+      // set label expression for Resource Requests if resourceName=ANY
+
+      System.out.println("================== Application Master Service ====================");
+        System.out.println(ask.size());
       ApplicationSubmissionContext asc = app.getApplicationSubmissionContext();
       for (ResourceRequest req : ask) {
+          System.out.println("================== Application Master Service ====================");
+          System.out.println(req.getContext());
+          System.out.println(req.getContext().get("taskId"));
+          System.out.println(req.context);
+          System.out.println(req.toString());
+          System.out.println(req.hashCode());
+          System.out.println("================== Application Master Service ====================");
         if (null == req.getNodeLabelExpression()
             && ResourceRequest.ANY.equals(req.getResourceName())) {
           req.setNodeLabelExpression(asc.getNodeLabelExpression());
