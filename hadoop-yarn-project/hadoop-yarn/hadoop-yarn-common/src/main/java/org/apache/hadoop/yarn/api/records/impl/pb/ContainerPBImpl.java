@@ -27,12 +27,18 @@ import org.apache.hadoop.yarn.api.records.NodeId;
 import org.apache.hadoop.yarn.api.records.Priority;
 import org.apache.hadoop.yarn.api.records.Resource;
 import org.apache.hadoop.yarn.api.records.Token;
+import org.apache.hadoop.yarn.proto.YarnProtos;
 import org.apache.hadoop.yarn.proto.YarnProtos.ContainerIdProto;
 import org.apache.hadoop.yarn.proto.YarnProtos.ContainerProto;
 import org.apache.hadoop.yarn.proto.YarnProtos.ContainerProtoOrBuilder;
 import org.apache.hadoop.yarn.proto.YarnProtos.NodeIdProto;
 import org.apache.hadoop.yarn.proto.YarnProtos.PriorityProto;
 import org.apache.hadoop.yarn.proto.YarnProtos.ResourceProto;
+
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 @Private
 @Unstable
@@ -105,6 +111,10 @@ public class ContainerPBImpl extends Container {
         && !((TokenPBImpl) this.containerToken).getProto().equals(
             builder.getContainerToken())) {
       builder.setContainerToken(convertToProtoFormat(this.containerToken));
+    }
+
+    if (this.containerContext != null) {
+        setContainerContext();
     }
   }
 
@@ -287,6 +297,62 @@ public class ContainerPBImpl extends Container {
   private TokenProto convertToProtoFormat(Token t) {
     return ((TokenPBImpl)t).getProto();
   }
+
+    @Override
+    public Map<String, String> getContainerContext() {
+        initEnv();
+        return this.containerContext;
+    }
+
+    private void initEnv() {
+        if (this.containerContext != null) {
+            return;
+        }
+
+        ContainerProtoOrBuilder p = viaProto ? proto : builder;
+        List<YarnProtos.StringStringMapProto> list = p.getContainerContextList();
+
+        this.containerContext = new HashMap<String, String>();
+
+        for (YarnProtos.StringStringMapProto c : list) {
+            this.containerContext.put(c.getKey(), c.getValue());
+        }
+    }
+
+
+    public void setContainerContext() {
+        maybeInitBuilder();
+        builder.clearContainerContext();
+        Iterable<YarnProtos.StringStringMapProto> iterable =
+                new Iterable<YarnProtos.StringStringMapProto>() {
+
+                    @Override
+                    public Iterator<YarnProtos.StringStringMapProto> iterator() {
+                        return new Iterator<YarnProtos.StringStringMapProto>() {
+
+                            Iterator<String> keyIter = containerContext.keySet().iterator();
+
+                            @Override
+                            public void remove() {
+                                throw new UnsupportedOperationException();
+                            }
+
+                            @Override
+                            public YarnProtos.StringStringMapProto next() {
+                                String key = keyIter.next();
+                                return YarnProtos.StringStringMapProto.newBuilder().setKey(key).setValue(
+                                        (getContainerContext().get(key))).build();
+                            }
+
+                            @Override
+                            public boolean hasNext() {
+                                return keyIter.hasNext();
+                            }
+                        };
+                    }
+                };
+        builder.addAllContainerContext(iterable);
+    }
 
   public String toString() {
     StringBuilder sb = new StringBuilder();

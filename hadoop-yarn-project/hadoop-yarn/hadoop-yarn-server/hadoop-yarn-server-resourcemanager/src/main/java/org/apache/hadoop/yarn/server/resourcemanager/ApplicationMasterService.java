@@ -22,11 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -488,18 +484,12 @@ public class ApplicationMasterService extends AbstractService implements
           this.rmContext.getRMApps().get(applicationId);
       
       // set label expression for Resource Requests if resourceName=ANY
-
-      System.out.println("================== Application Master Service ====================");
-        System.out.println(ask.size());
       ApplicationSubmissionContext asc = app.getApplicationSubmissionContext();
       for (ResourceRequest req : ask) {
-          System.out.println("================== Application Master Service ====================");
-          System.out.println(req.getContext());
-          System.out.println(req.getContext().get("taskId"));
-          System.out.println(req.context);
-          System.out.println(req.toString());
-          System.out.println(req.hashCode());
-          System.out.println("================== Application Master Service ====================");
+          System.out.println("");
+          System.out.println("----------- Application Master Service Start -----------");
+          System.out.println("Received ResourceRequest with context: " + req.requestResourceToNewString());
+          System.out.println("----------- Application Master Service End -----------");
         if (null == req.getNodeLabelExpression()
             && ResourceRequest.ANY.equals(req.getResourceName())) {
           req.setNodeLabelExpression(asc.getNodeLabelExpression());

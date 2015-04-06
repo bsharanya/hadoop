@@ -29,7 +29,6 @@ import org.apache.hadoop.yarn.proto.YarnProtos.PriorityProto;
 import org.apache.hadoop.yarn.proto.YarnProtos.ResourceProto;
 import org.apache.hadoop.yarn.proto.YarnProtos.ResourceRequestProto;
 import org.apache.hadoop.yarn.proto.YarnProtos.ResourceRequestProtoOrBuilder;
-import org.apache.hadoop.yarn.proto.YarnProtos.StringStringMapProto;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -217,35 +216,30 @@ public class ResourceRequestPBImpl extends ResourceRequest {
     }
 
     @Override
-    public Map<String, String> getContext() {
+    public Map<String, String> getResourceRequestContext() {
         initEnv();
-        return this.context;
+        return this.resourceRequestContext;
     }
 
     private void initEnv() {
-        if (this.context != null) {
+        if (this.resourceRequestContext != null) {
             return;
         }
 
         YarnProtos.ResourceRequestProtoOrBuilder p = viaProto ? proto : builder;
-        List<YarnProtos.StringStringMapProto> list = p.getContextList();
+        List<YarnProtos.StringStringMapProto> list = p.getResourceRequestContextList();
 
-        this.context = new HashMap<String, String>();
+        this.resourceRequestContext = new HashMap<String, String>();
 
         for (YarnProtos.StringStringMapProto c : list) {
-            this.context.put(c.getKey(), c.getValue());
+            this.resourceRequestContext.put(c.getKey(), c.getValue());
         }
-
-        System.out.println("************GET***************");
-        System.out.println(list);
-        System.out.println("***************************");
-        System.out.println(this.context);
-        System.out.println("***************GET************");
     }
 
-    public void setContext() {
+
+    public void setResourceRequestContext() {
         maybeInitBuilder();
-        builder.clearContext();
+        builder.clearResourceRequestContext();
         Iterable<YarnProtos.StringStringMapProto> iterable =
                 new Iterable<YarnProtos.StringStringMapProto>() {
 
@@ -253,7 +247,7 @@ public class ResourceRequestPBImpl extends ResourceRequest {
                     public Iterator<YarnProtos.StringStringMapProto> iterator() {
                         return new Iterator<YarnProtos.StringStringMapProto>() {
 
-                            Iterator<String> keyIter = context.keySet().iterator();
+                            Iterator<String> keyIter = resourceRequestContext.keySet().iterator();
 
                             @Override
                             public void remove() {
@@ -264,7 +258,7 @@ public class ResourceRequestPBImpl extends ResourceRequest {
                             public YarnProtos.StringStringMapProto next() {
                                 String key = keyIter.next();
                                 return YarnProtos.StringStringMapProto.newBuilder().setKey(key).setValue(
-                                        (getContext().get(key))).build();
+                                        (getResourceRequestContext().get(key))).build();
                             }
 
                             @Override
@@ -274,11 +268,6 @@ public class ResourceRequestPBImpl extends ResourceRequest {
                         };
                     }
                 };
-        System.out.println("***************SET************");
-        System.out.println(context);
-        System.out.println("***************SET************");
-        builder.addAllContext(iterable);
-        System.out.println(builder.toString());
-        System.out.println("***************SET************");
+        builder.addAllResourceRequestContext(iterable);
     }
 }

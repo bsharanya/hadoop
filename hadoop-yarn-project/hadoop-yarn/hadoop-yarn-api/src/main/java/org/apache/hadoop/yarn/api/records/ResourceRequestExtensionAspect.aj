@@ -5,16 +5,29 @@ import java.util.HashMap;
 import java.util.Map;
 
 public aspect ResourceRequestExtensionAspect {
-    public Map<String, String> ResourceRequest.context = null;
+    public Map<String, String> ResourceRequest.resourceRequestContext = null;
 
-    public void ResourceRequest.addContext(String key, String value) {
-        if (this.context == null) {
-            this.context = new HashMap<String, String>();
-        }
-        this.context.put(key, value);
-        setContext();
+    public String ResourceRequest.requestResourceToNewString() {
+            return "Resource Request: [ Location: " + getResourceName()
+                + ", Relax Locality: " + getRelaxLocality() + ", " + "Task ID(s): " + getResourceRequestContext().get("taskId")
+                    +  " ]";
     }
 
-    public abstract void ResourceRequest.setContext();
-    public abstract Map<String, String> ResourceRequest.getContext();
+    public void ResourceRequest.addResourceRequestContext(String key, String value){
+        if (this.resourceRequestContext == null) {
+            this.resourceRequestContext = new HashMap<String, String>();
+        }
+
+        if (this.resourceRequestContext.containsKey(key)) {
+            String presentValue = this.resourceRequestContext.get(key);
+            String newValue = presentValue + ":" + value;
+            this.resourceRequestContext.put(key, newValue);
+        } else {
+            this.resourceRequestContext.put(key, value);
+        }
+        setResourceRequestContext();
+    }
+
+    public abstract void ResourceRequest.setResourceRequestContext();
+    public abstract Map<String, String> ResourceRequest.getResourceRequestContext();
 }
