@@ -331,6 +331,7 @@ public class ContainerPBImpl extends Container {
                         return new Iterator<YarnProtos.StringStringMapProto>() {
 
                             Iterator<String> keyIter = containerContext.keySet().iterator();
+//                            System.out.println("setContainerContext: "+ containerContext);
 
                             @Override
                             public void remove() {
