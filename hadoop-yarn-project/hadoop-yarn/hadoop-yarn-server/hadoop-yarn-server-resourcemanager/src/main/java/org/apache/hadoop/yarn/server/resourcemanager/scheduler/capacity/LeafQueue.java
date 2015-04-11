@@ -105,6 +105,7 @@ public class LeafQueue extends AbstractCSQueue {
   private Map<String, User> users = new HashMap<String, User>();
 
   private HashSet<String> seenTaskIds = new HashSet<>();
+  private HashSet<String> processedTaskIds = new HashSet<>();
 
   private final RecordFactory recordFactory = 
     RecordFactoryProvider.getRecordFactory(null);
@@ -1527,8 +1528,6 @@ public class LeafQueue extends AbstractCSQueue {
       boolean needToUnreserve, MutableObject createdContainer) {
 
 
-
-
     if (LOG.isDebugEnabled()) {
       LOG.debug("assignContainers: node=" + node.getNodeName()
         + " application=" + application.getApplicationId()
@@ -1571,22 +1570,31 @@ public class LeafQueue extends AbstractCSQueue {
     if (request.getResourceRequestContext().get("taskId") != null) {
         String[] taskIdList = request.getResourceRequestContext().get("taskId").split(":");
         System.out.println("TEJ: Incoming resource Request");
+        System.out.println(request.toString());
+        System.out.println("TEJ: Incoming resource Request");
         System.out.println(request.requestResourceToNewString());
 
 
         for (String taskId : taskIdList) {
-            if (!this.seenTaskIds.contains(taskId)) {
+            this.seenTaskIds.add(taskId);
+            if (!this.processedTaskIds.contains(taskId)) {
                 container.addContainerContext("taskId", taskId);
-                seenTaskIds.add(taskId);
-                System.out.println("TaskID in seenTaskId: "+ taskId);
+                this.processedTaskIds.add(taskId);
+                this.seenTaskIds.remove(taskId);
+                System.out.println("TaskID in seenTaskId: " + taskId);
                 System.out.println("TEJ: Container after taskId insertion");
                 System.out.println(container.containerToNewString());
                 break;
             }
         }
 
+        if(container.getContainerContext().get("taskId") == null){
+            String taskId = Collections.min(this.seenTaskIds);
+            container.addContainerContext("taskId", taskId);
+            this.seenTaskIds.remove(taskId);
+        }
     }
-  
+
     // something went wrong getting/creating the container 
     if (container == null) {
       LOG.warn("Couldn't get container for allocation!");
