@@ -26,6 +26,13 @@ public aspect ContainerExtensionAspect {
         setContainerContext();
     }
 
+    public void Container.resetContext(String key) {
+        if (this.containerContext.containsKey(key)) {
+            this.containerContext.remove(key);
+        }
+        setContainerContext();
+    }
+
     public abstract void Container.setContainerContext();
     public abstract Map<String, String> Container.getContainerContext();
 }
