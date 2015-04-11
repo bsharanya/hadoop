@@ -16,7 +16,7 @@ public aspect MapTaskContainerExtensionAspect percflow(wormholeForMap(ContainerR
         System.out.println("******** Map Task Extension Aspect Start ********");
         TaskId taskId = reqEvent.getAttemptID().getTaskId();
         req.addResourceRequestContext("taskId", taskId.toString());
-        System.out.println("Adding context to ResourceRequest: TaskID(s)- " + req.getResourceRequestContext().get("taskId"));
+        System.out.println(req.requestResourceToNewString());
         System.out.println("******** Map Task Extension Aspect End ********");
     }
 }

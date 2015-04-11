@@ -984,6 +984,7 @@ public class RMContainerAllocator extends RMContainerRequestor
             }
             maps.put(event.getAttemptID(), request);
             addContainerReqForMap(request);
+            addContainerReqForMap(request);
         }
 
 
@@ -1100,10 +1101,6 @@ public class RMContainerAllocator extends RMContainerRequestor
         @SuppressWarnings("unchecked")
         private void containerAssigned(Container allocated,
                                        ContainerRequest assigned) {
-
-            System.out.println("Container specification is: " + allocated.containerToNewString());
-            System.out.println("Container allocated to task: " + assigned.attemptID.getTaskId().toString());
-            System.out.println("");
             // Update resource requests
             decContainerReq(assigned);
 
@@ -1222,7 +1219,6 @@ public class RMContainerAllocator extends RMContainerRequestor
             }
             return assigned;
         }
-
         @SuppressWarnings("unchecked")
         private void assignMapsWithLocality(List<Container> allocatedContainers) {
             System.out.println("");
@@ -1241,6 +1237,7 @@ public class RMContainerAllocator extends RMContainerRequestor
                 for (TaskAttemptId taskAttemptId : maps.keySet()) {
                     if (taskId.equals(taskAttemptId.getTaskId().toString())) {
                         ContainerRequest assigned = maps.remove(taskAttemptId);
+                        System.out.println("Container requested: " + assigned.toString());
                         containerAssigned(allocated, assigned);
                         it.remove();
                         if (containerIsLocal(assigned, host)) {
