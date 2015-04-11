@@ -1574,24 +1574,34 @@ public class LeafQueue extends AbstractCSQueue {
         System.out.println("TEJ: Incoming resource Request");
         System.out.println(request.requestResourceToNewString());
 
+        for (String taskId : taskIdList) {
+            if(!this.processedTaskIds.contains(taskId)) {
+                this.seenTaskIds.add(taskId);
+            }
+        }
 
         for (String taskId : taskIdList) {
-            this.seenTaskIds.add(taskId);
             if (!this.processedTaskIds.contains(taskId)) {
                 container.addContainerContext("taskId", taskId);
                 this.processedTaskIds.add(taskId);
                 this.seenTaskIds.remove(taskId);
-                System.out.println("TaskID in seenTaskId: " + taskId);
+                System.out.println("TEJ: TaskID in seenTaskId: " + taskId);
                 System.out.println("TEJ: Container after taskId insertion");
                 System.out.println(container.containerToNewString());
                 break;
             }
         }
 
-        if(container.getContainerContext().get("taskId") == null){
-            String taskId = Collections.min(this.seenTaskIds);
-            container.addContainerContext("taskId", taskId);
-            this.seenTaskIds.remove(taskId);
+        if(container.getContainerContext().get("taskId") == null) {
+            if (this.seenTaskIds.size() != 0) {
+                System.out.println("TEJ: ANY");
+                String taskId = Collections.min(this.seenTaskIds);
+                container.addContainerContext("taskId", taskId);
+                this.seenTaskIds.remove(taskId);
+            } else {
+                System.out.println("TEJ: HAKUNAMA: This Happened!!!!!");
+                return Resources.none();
+            }
         }
     }
 
