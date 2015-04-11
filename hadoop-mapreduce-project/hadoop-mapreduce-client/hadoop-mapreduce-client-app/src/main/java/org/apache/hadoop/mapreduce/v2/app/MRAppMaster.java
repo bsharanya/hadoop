@@ -860,6 +860,7 @@ public class MRAppMaster extends CompositeService {
       ((RMCommunicator) containerAllocator).setShouldUnregister(shouldUnregister);
     }
 
+
     @Override
     public long getLastHeartbeatTime() {
       return ((RMCommunicator) containerAllocator).getLastHeartbeatTime();

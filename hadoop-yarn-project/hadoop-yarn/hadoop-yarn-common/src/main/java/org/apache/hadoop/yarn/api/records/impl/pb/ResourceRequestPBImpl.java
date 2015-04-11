@@ -217,11 +217,11 @@ public class ResourceRequestPBImpl extends ResourceRequest {
 
     @Override
     public Map<String, String> getResourceRequestContext() {
-        initEnv();
+        initContext();
         return this.resourceRequestContext;
     }
 
-    private void initEnv() {
+    private void initContext() {
         if (this.resourceRequestContext != null) {
             return;
         }
