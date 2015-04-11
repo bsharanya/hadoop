@@ -1554,44 +1554,47 @@ public class LeafQueue extends AbstractCSQueue {
     Resource totalResource = node.getTotalResource();
 
     if (!Resources.fitsIn(capability, totalResource)) {
-      LOG.warn("Node : " + node.getNodeID()
+        LOG.warn("Node : " + node.getNodeID()
           + " does not have sufficient resource for request : " + request
           + " node total capability : " + node.getTotalResource());
-      return Resources.none();
+        return Resources.none();
     }
-    assert Resources.greaterThan(
+      assert Resources.greaterThan(
         resourceCalculator, clusterResource, available, Resources.none());
 
-    // Create the container if necessary
-    Container container = 
+      // Create the container if necessary
+      Container container =
         getContainer(rmContainer, application, node, capability, priority);
 
-    String assignedTaskId = null;
-    if (container != null) {
-        if (request.getResourceRequestContext().get("taskId") != null) {
-            String[] taskIdList = request.getResourceRequestContext().get("taskId").split(":");
-            System.out.println("TEJ: Incoming resource Request");
-            System.out.println(request.toString());
-            System.out.println("TEJ: Incoming resource Request");
-            System.out.println(request.requestResourceToNewString());
+      if (container == null) {
+          LOG.warn("Couldn't get container for allocation!");
+          return Resources.none();
+      }
 
-            for (String taskId : taskIdList) {
-                if(!this.processedTaskIds.contains(taskId)) {
-                    this.seenTaskIds.add(taskId);
-                }
+      String assignedTaskId = null;
+      if (request.getResourceRequestContext().get("taskId") != null) {
+          String[] taskIdList = request.getResourceRequestContext().get("taskId").split(":");
+        System.out.println("TEJ: Incoming resource Request");
+        System.out.println(request.toString());
+        System.out.println("TEJ: Incoming resource Request");
+        System.out.println(request.requestResourceToNewString());
+
+        for (String taskId : taskIdList) {
+            if(!this.processedTaskIds.contains(taskId)) {
+                this.seenTaskIds.add(taskId);
             }
+        }
 
-            for (String taskId : taskIdList) {
-                if (!this.processedTaskIds.contains(taskId)) {
-                    assignedTaskId = taskId;
-                    container.addContainerContext("taskId", taskId);
-                    this.processedTaskIds.add(taskId);
-                    this.seenTaskIds.remove(taskId);
-                    System.out.println("TEJ: TaskID in seenTaskId: " + taskId);
-                    System.out.println("TEJ: Container after taskId insertion");
-                    System.out.println(container.containerToNewString());
-                    break;
-                }
+        for (String taskId : taskIdList) {
+            if (!this.processedTaskIds.contains(taskId)) {
+                container.addContainerContext("taskId", taskId);
+                assignedTaskId = taskId;
+                this.processedTaskIds.add(taskId);
+                this.seenTaskIds.remove(taskId);
+                System.out.println("TEJ: TaskID in seenTaskId: " + taskId);
+                System.out.println("TEJ: Container after taskId insertion");
+                System.out.println(container.containerToNewString());
+                break;
             }
         }
 
@@ -1599,8 +1602,8 @@ public class LeafQueue extends AbstractCSQueue {
             if (this.seenTaskIds.size() != 0) {
                 System.out.println("TEJ: ANY");
                 String taskId = Collections.min(this.seenTaskIds);
-                assignedTaskId = taskId;
                 container.addContainerContext("taskId", taskId);
+                assignedTaskId = taskId;
                 this.processedTaskIds.add(taskId);
                 this.seenTaskIds.remove(taskId);
             }
@@ -1608,10 +1611,6 @@ public class LeafQueue extends AbstractCSQueue {
     }
 
       // something went wrong getting/creating the container
-    if (container == null) {
-      LOG.warn("Couldn't get container for allocation!");
-      return Resources.none();
-    }
 
     // default to true since if reservation continue look feature isn't on
     // needContainers is checked earlier and we wouldn't have gotten this far
@@ -1657,13 +1656,13 @@ public class LeafQueue extends AbstractCSQueue {
           if (LOG.isDebugEnabled()) {
             LOG.debug("we needed to unreserve to be able to allocate, skipping");
           }
-            if(assignedTaskId != null) {
-                container.resetContext("taskId");
-                seenTaskIds.add(assignedTaskId);
-                processedTaskIds.remove(assignedTaskId);
-            }
+          if(assignedTaskId != null) {
+              container.resetContext("taskId");
+              seenTaskIds.add(assignedTaskId);
+              processedTaskIds.remove(assignedTaskId);
+          }
 
-            return Resources.none();
+          return Resources.none();
         }
       }
 
