@@ -19,7 +19,7 @@ public aspect MapTaskContainerExtensionAspect percflow(wormholeForMap(ContainerR
         String random = taskId.toString();
         if(random.endsWith("000191")) {
             System.out.println("MADHU: @@@@@@@@@@@@@@@@@@@@@@@@");
-            req.getResourceName();
+            System.out.println(req.getResourceName());
             System.out.println("MADHU: @@@@@@@@@@@@@@@@@@@@@@@@");
         }
         System.out.println(req.requestResourceToNewString());
