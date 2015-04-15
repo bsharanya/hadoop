@@ -1608,8 +1608,19 @@ public class LeafQueue extends AbstractCSQueue {
                 this.seenTaskIds.remove(taskId);
             }
         }
-    }
+    } else {
+          System.out.println("TEJ NULL: Incoming request has taskId as NULL ");
+          System.out.println(request.toString());
+      }
 
+
+    if (container.getContainerContext().get("taskId") == null){
+        System.out.println("TEJ NULL: Container has taskId as NULL ");
+        System.out.println(container.toString());
+        System.out.println("TEJ NULL: The Incoming Resource Request");
+        System.out.println(request.toString());
+        System.out.println(request.getResourceRequestContext().get("taskId"));
+    }
       // something went wrong getting/creating the container
 
     // default to true since if reservation continue look feature isn't on
