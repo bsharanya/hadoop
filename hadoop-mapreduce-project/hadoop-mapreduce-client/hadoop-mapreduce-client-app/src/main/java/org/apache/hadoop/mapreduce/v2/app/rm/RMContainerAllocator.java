@@ -1233,9 +1233,10 @@ public class RMContainerAllocator extends RMContainerRequestor
                 // hence this while loop would almost always have O(1) complexity
                 System.out.println("Container allocated: " + allocated.containerToNewString());
                 String host = allocated.getNodeId().getHost();
-                String taskId = allocated.getContainerContext().get("taskId");
+                String taskAttemptID = allocated.getContainerContext().get("taskAttemptID");
                 for (TaskAttemptId taskAttemptId : maps.keySet()) {
-                    if (taskId.equals(taskAttemptId.getTaskId().toString())) {
+//                    if (taskId.equals(taskAttemptId.getTaskId().toString())) {
+                    if (taskAttemptID.equals(taskAttemptId.toString())) {
                         ContainerRequest assigned = maps.remove(taskAttemptId);
                         System.out.println("Container requested: " + assigned.toString());
                         containerAssigned(allocated, assigned);

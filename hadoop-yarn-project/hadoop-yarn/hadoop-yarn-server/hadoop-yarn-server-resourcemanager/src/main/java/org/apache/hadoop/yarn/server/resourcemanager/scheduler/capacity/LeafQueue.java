@@ -104,8 +104,8 @@ public class LeafQueue extends AbstractCSQueue {
 
   private Map<String, User> users = new HashMap<String, User>();
 
-  private HashSet<String> seenTaskIds = new HashSet<>();
-  private HashSet<String> processedTaskIds = new HashSet<>();
+  private HashSet<String> seenTaskAttemptIds = new HashSet<>();
+  private HashSet<String> processedTaskAttemptIds = new HashSet<>();
 
   private final RecordFactory recordFactory = 
     RecordFactoryProvider.getRecordFactory(null);
@@ -1571,41 +1571,41 @@ public class LeafQueue extends AbstractCSQueue {
           return Resources.none();
       }
 
-      String assignedTaskId = null;
-      if (request.getResourceRequestContext().get("taskId") != null) {
-          String[] taskIdList = request.getResourceRequestContext().get("taskId").split(":");
+      String assignedTaskAttemptId = null;
+      if (request.getResourceRequestContext().get("taskAttemptID") != null) {
+          String[] taskAttemptIDList = request.getResourceRequestContext().get("taskAttemptID").split(":");
         System.out.println("TEJ: Incoming resource Request");
         System.out.println(request.toString());
         System.out.println("TEJ: Incoming resource Request");
         System.out.println(request.requestResourceToNewString());
 
-        for (String taskId : taskIdList) {
-            if(!this.processedTaskIds.contains(taskId)) {
-                this.seenTaskIds.add(taskId);
+        for (String taskAttemptId : taskAttemptIDList) {
+            if(!this.processedTaskAttemptIds.contains(taskAttemptId)) {
+                this.seenTaskAttemptIds.add(taskAttemptId);
             }
         }
 
-        for (String taskId : taskIdList) {
-            if (!this.processedTaskIds.contains(taskId)) {
-                container.addContainerContext("taskId", taskId);
-                assignedTaskId = taskId;
-                this.processedTaskIds.add(taskId);
-                this.seenTaskIds.remove(taskId);
-                System.out.println("TEJ: TaskID in seenTaskId: " + taskId);
-                System.out.println("TEJ: Container after taskId insertion");
+        for (String taskAttemptId : taskAttemptIDList) {
+            if (!this.processedTaskAttemptIds.contains(taskAttemptId)) {
+                container.addContainerContext("taskAttemptID", taskAttemptId);
+                assignedTaskAttemptId = taskAttemptId;
+                this.processedTaskAttemptIds.add(taskAttemptId);
+                this.seenTaskAttemptIds.remove(taskAttemptId);
+                System.out.println("TEJ: TaskAttemptID in seenTaskAttemptId: " + taskAttemptId);
+                System.out.println("TEJ: Container after taskAttemptId insertion");
                 System.out.println(container.containerToNewString());
                 break;
             }
         }
 
-        if(container.getContainerContext().get("taskId") == null) {
-            if (this.seenTaskIds.size() != 0) {
+        if(container.getContainerContext().get("taskAttemptID") == null) {
+            if (this.seenTaskAttemptIds.size() != 0) {
                 System.out.println("TEJ: ANY");
-                String taskId = Collections.min(this.seenTaskIds);
-                container.addContainerContext("taskId", taskId);
-                assignedTaskId = taskId;
-                this.processedTaskIds.add(taskId);
-                this.seenTaskIds.remove(taskId);
+                String taskAttemptId = Collections.min(this.seenTaskAttemptIds);
+                container.addContainerContext("taskAttemptID", taskAttemptId);
+                assignedTaskAttemptId = taskAttemptId;
+                this.processedTaskAttemptIds.add(taskAttemptId);
+                this.seenTaskAttemptIds.remove(taskAttemptId);
             }
         }
     } else {
@@ -1614,12 +1614,12 @@ public class LeafQueue extends AbstractCSQueue {
       }
 
 
-    if (container.getContainerContext().get("taskId") == null){
+    if (container.getContainerContext().get("taskAttemptID") == null){
         System.out.println("TEJ NULL: Container has taskId as NULL ");
         System.out.println(container.toString());
         System.out.println("TEJ NULL: The Incoming Resource Request");
         System.out.println(request.toString());
-        System.out.println(request.getResourceRequestContext().get("taskId"));
+        System.out.println(request.getResourceRequestContext().get("taskAttemptID"));
     }
       // something went wrong getting/creating the container
 
@@ -1650,10 +1650,10 @@ public class LeafQueue extends AbstractCSQueue {
         boolean res = findNodeToUnreserve(clusterResource, node, application,
             priority, capability);
         if (!res) {
-          if(assignedTaskId != null) {
-              container.resetContext("taskId");
-              seenTaskIds.add(assignedTaskId);
-              processedTaskIds.remove(assignedTaskId);
+          if(assignedTaskAttemptId != null) {
+              container.resetContext("taskAttemptID");
+              seenTaskAttemptIds.add(assignedTaskAttemptId);
+              processedTaskAttemptIds.remove(assignedTaskAttemptId);
           }
           return Resources.none();
         }
@@ -1667,10 +1667,10 @@ public class LeafQueue extends AbstractCSQueue {
           if (LOG.isDebugEnabled()) {
             LOG.debug("we needed to unreserve to be able to allocate, skipping");
           }
-          if(assignedTaskId != null) {
-              container.resetContext("taskId");
-              seenTaskIds.add(assignedTaskId);
-              processedTaskIds.remove(assignedTaskId);
+          if(assignedTaskAttemptId != null) {
+              container.resetContext("taskAttemptID");
+              seenTaskAttemptIds.add(assignedTaskAttemptId);
+              processedTaskAttemptIds.remove(assignedTaskAttemptId);
           }
 
           return Resources.none();
@@ -1683,10 +1683,10 @@ public class LeafQueue extends AbstractCSQueue {
 
       // Does the application need this resource?
       if (allocatedContainer == null) {
-          if(assignedTaskId != null) {
-              container.resetContext("taskId");
-              seenTaskIds.add(assignedTaskId);
-              processedTaskIds.remove(assignedTaskId);
+          if(assignedTaskAttemptId != null) {
+              container.resetContext("taskAttemptID");
+              seenTaskAttemptIds.add(assignedTaskAttemptId);
+              processedTaskAttemptIds.remove(assignedTaskAttemptId);
           }
           return Resources.none();
       }
@@ -1715,10 +1715,10 @@ public class LeafQueue extends AbstractCSQueue {
           boolean res = checkLimitsToReserve(clusterResource, application, capability, 
               needToUnreserve);
           if (!res) {
-              if(assignedTaskId != null) {
-                  container.resetContext("taskId");
-                  seenTaskIds.add(assignedTaskId);
-                  processedTaskIds.remove(assignedTaskId);
+              if(assignedTaskAttemptId != null) {
+                  container.resetContext("taskAttemptID");
+                  seenTaskAttemptIds.add(assignedTaskAttemptId);
+                  processedTaskAttemptIds.remove(assignedTaskAttemptId);
               }
               return Resources.none();
           }
@@ -1738,10 +1738,10 @@ public class LeafQueue extends AbstractCSQueue {
 
         return request.getCapability();
       }
-        if(assignedTaskId != null) {
-            container.resetContext("taskId");
-            seenTaskIds.add(assignedTaskId);
-            processedTaskIds.remove(assignedTaskId);
+        if(assignedTaskAttemptId != null) {
+            container.resetContext("taskAttemptID");
+            seenTaskAttemptIds.add(assignedTaskAttemptId);
+            processedTaskAttemptIds.remove(assignedTaskAttemptId);
         }
       return Resources.none();
     }

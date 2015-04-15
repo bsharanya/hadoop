@@ -8,7 +8,7 @@ public aspect ContainerExtensionAspect {
     public Map<String, String> Container.containerContext = null;
 
     public String Container.containerToNewString() {
-        return "Container: [ ContainerId: " + getId() + ", NodeId: " + getNodeId() + ", " + " Task ID(s): " + getContainerContext().get("taskId") + " ]";
+        return "Container: [ ContainerId: " + getId() + ", NodeId: " + getNodeId() + ", " + " Task ID(s): " + getContainerContext().get("taskAttemptID") + " ]";
     }
 
     public void Container.addContainerContext(String key, String value) {

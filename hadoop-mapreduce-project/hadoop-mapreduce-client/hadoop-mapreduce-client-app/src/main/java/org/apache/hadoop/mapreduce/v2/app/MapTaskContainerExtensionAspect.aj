@@ -1,5 +1,6 @@
 package org.apache.hadoop.mapreduce.v2.app;
 
+import org.apache.hadoop.mapreduce.v2.api.records.TaskAttemptId;
 import org.apache.hadoop.mapreduce.v2.api.records.TaskId;
 import org.apache.hadoop.mapreduce.v2.app.rm.ContainerRequestEvent;
 import org.apache.hadoop.yarn.api.records.ResourceRequest;
@@ -14,9 +15,10 @@ public aspect MapTaskContainerExtensionAspect percflow(wormholeForMap(ContainerR
     after(ContainerRequestEvent reqEvent, ResourceRequest req) : wormholeForMap(reqEvent, req) {
         System.out.println("");
         System.out.println("******** Map Task Extension Aspect Start ********");
-        TaskId taskId = reqEvent.getAttemptID().getTaskId();
-        req.addResourceRequestContext("taskId", taskId.toString());
-        String random = taskId.toString();
+//        TaskId taskId = reqEvent.getAttemptID().getTaskId();
+        TaskAttemptId taskAttemptId = reqEvent.getAttemptID();
+        req.addResourceRequestContext("taskAttemptID", taskAttemptId.toString());
+        String random = taskAttemptId.toString();
 //        if(random.endsWith("000191")) {
 //            System.out.println("MADHU: @@@@@@@@@@@@@@@@@@@@@@@@");
 //            System.out.println(req.getResourceName());

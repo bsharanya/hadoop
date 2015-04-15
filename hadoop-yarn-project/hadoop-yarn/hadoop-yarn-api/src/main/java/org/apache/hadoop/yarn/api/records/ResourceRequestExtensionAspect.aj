@@ -10,7 +10,7 @@ public aspect ResourceRequestExtensionAspect {
     public String ResourceRequest.requestResourceToNewString() {
             return "Resource Request: [ Location: " + getResourceName()
                 + ", Relax Locality: " + getRelaxLocality() + ", Number of Containers: " + getNumContainers()
-                    + "Task ID(s): " + getResourceRequestContext().get("taskId") +  " ]";
+                    + "TaskAttempt ID(s): " + getResourceRequestContext().get("taskAttemptID") +  " ]";
     }
 
     public void ResourceRequest.addResourceRequestContext(String key, String value){
