@@ -1144,10 +1144,12 @@ public class RMContainerAllocator extends RMContainerRequestor
             Iterator<Container> it = allocatedContainers.iterator();
             while (it.hasNext()) {
                 Container allocated = it.next();
-                ContainerRequest assigned = assignWithoutLocality(allocated);
-                if (assigned != null) {
-                    containerAssigned(allocated, assigned);
-                    it.remove();
+                if (allocated.getContainerContext().get("taskAttemptID") == null || allocated.getContainerContext().get("taskAttemptID").equals("")) {
+                    ContainerRequest assigned = assignWithoutLocality(allocated);
+                    if (assigned != null) {
+                        containerAssigned(allocated, assigned);
+                        it.remove();
+                    }
                 }
             }
 
@@ -1233,6 +1235,7 @@ public class RMContainerAllocator extends RMContainerRequestor
                 // hence this while loop would almost always have O(1) complexity
                 System.out.println("Container allocated: " + allocated.containerToNewString());
                 String host = allocated.getNodeId().getHost();
+                String rack = RackResolver.resolve(host).getNetworkLocation();
                 String taskAttemptID = allocated.getContainerContext().get("taskAttemptID");
                 for (TaskAttemptId taskAttemptId : maps.keySet()) {
 //                    if (taskId.equals(taskAttemptId.getTaskId().toString())) {
@@ -1251,7 +1254,7 @@ public class RMContainerAllocator extends RMContainerRequestor
                             if (LOG.isDebugEnabled()) {
                                 LOG.debug("Assigned based on host match " + host);
                             }
-                        } else if (containerIsRackLocal(assigned, host)) {
+                        } else if (containerIsRackLocal(assigned, rack)) {
                             System.out.println("------------------ RACK LOCAL --------------------");
                             JobCounterUpdateEvent jce =
                                     new JobCounterUpdateEvent(assigned.attemptID.getTaskId().getJobId());
