@@ -983,8 +983,7 @@ public class RMContainerAllocator extends RMContainerRequestor
                 request = new ContainerRequest(event, PRIORITY_MAP);
             }
             maps.put(event.getAttemptID(), request);
-            addContainerReqForMap(request);
-//            addContainerReqForMap(request);
+            addContainerReq(request);
         }
 
 

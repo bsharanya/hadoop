@@ -15,15 +15,8 @@ public aspect MapTaskContainerExtensionAspect percflow(wormholeForMap(ContainerR
     after(ContainerRequestEvent reqEvent, ResourceRequest req) : wormholeForMap(reqEvent, req) {
         System.out.println("");
         System.out.println("******** Map Task Extension Aspect Start ********");
-//        TaskId taskId = reqEvent.getAttemptID().getTaskId();
         TaskAttemptId taskAttemptId = reqEvent.getAttemptID();
         req.addResourceRequestContext("taskAttemptID", taskAttemptId.toString());
-        String random = taskAttemptId.toString();
-//        if(random.endsWith("000191")) {
-//            System.out.println("MADHU: @@@@@@@@@@@@@@@@@@@@@@@@");
-//            System.out.println(req.getResourceName());
-//            System.out.println("MADHU: @@@@@@@@@@@@@@@@@@@@@@@@");
-//        }
         System.out.println(req.requestResourceToNewString());
         System.out.println("******** Map Task Extension Aspect End ********");
     }
