@@ -1222,8 +1222,9 @@ public class RMContainerAllocator extends RMContainerRequestor
         }
         @SuppressWarnings("unchecked")
         private void assignMapsWithLocality(List<Container> allocatedContainers) {
+            // ADS CHANGES
             System.out.println("");
-            System.out.println("----------- Entered Container Allocation For Map Tasks -----------");
+            System.out.println("----------- ASSIGN MAPS WITH LOCALITY START -----------");
             // try to assign to all nodes first to match node local
             Iterator<Container> it = allocatedContainers.iterator();
             while (it.hasNext() && maps.size() > 0 && canAssignMaps()) {
@@ -1232,7 +1233,6 @@ public class RMContainerAllocator extends RMContainerRequestor
                 assert PRIORITY_MAP.equals(priority);
                 // "if (maps.containsKey(tId))" below should be almost always true.
                 // hence this while loop would almost always have O(1) complexity
-                System.out.println("Container allocated: " + allocated.containerToNewString());
                 String host = allocated.getNodeId().getHost();
                 String rack = RackResolver.resolve(host).getNetworkLocation();
                 String taskAttemptID = allocated.getContainerContext().get("taskAttemptID");
@@ -1240,11 +1240,10 @@ public class RMContainerAllocator extends RMContainerRequestor
 //                    if (taskId.equals(taskAttemptId.getTaskId().toString())) {
                     if (taskAttemptID.equals(taskAttemptId.toString())) {
                         ContainerRequest assigned = maps.remove(taskAttemptId);
-                        System.out.println("Container requested: " + assigned.toString());
                         containerAssigned(allocated, assigned);
                         it.remove();
                         if (containerIsLocal(assigned, host)) {
-                            System.out.println("------------------ LOCAL --------------------");
+                            System.out.println("DATA LOCAL: Container Allocated: " + allocated.containerToNewString());
                             JobCounterUpdateEvent jce =
                                     new JobCounterUpdateEvent(assigned.attemptID.getTaskId().getJobId());
                             jce.addCounterUpdate(JobCounter.DATA_LOCAL_MAPS, 1);
@@ -1254,7 +1253,7 @@ public class RMContainerAllocator extends RMContainerRequestor
                                 LOG.debug("Assigned based on host match " + host);
                             }
                         } else if (containerIsRackLocal(assigned, rack)) {
-                            System.out.println("------------------ RACK LOCAL --------------------");
+                            System.out.println("RACK LOCAL: Container Allocated: " + allocated.containerToNewString());
                             JobCounterUpdateEvent jce =
                                     new JobCounterUpdateEvent(assigned.attemptID.getTaskId().getJobId());
                             jce.addCounterUpdate(JobCounter.RACK_LOCAL_MAPS, 1);
@@ -1264,7 +1263,7 @@ public class RMContainerAllocator extends RMContainerRequestor
                                 LOG.debug("Assigned based on rack match " + host);
                             }
                         } else {
-                            System.out.println("------------------ ANY --------------------");
+                            System.out.println("ANY: Container Allocated: " + allocated.containerToNewString());
                             JobCounterUpdateEvent jce =
                                     new JobCounterUpdateEvent(assigned.attemptID.getTaskId().getJobId());
                             jce.addCounterUpdate(JobCounter.OTHER_LOCAL_MAPS, 1);
@@ -1352,7 +1351,8 @@ public class RMContainerAllocator extends RMContainerRequestor
 //                    LOG.debug("Assigned based on * match");
 //                }
 //            }
-            System.out.println("----------- Exiting Container Allocation For Map Tasks -----------");
+            System.out.println("----------- ASSIGN MAPS WITH LOCALITY END -----------");
+            System.out.println("");
         }
 
 

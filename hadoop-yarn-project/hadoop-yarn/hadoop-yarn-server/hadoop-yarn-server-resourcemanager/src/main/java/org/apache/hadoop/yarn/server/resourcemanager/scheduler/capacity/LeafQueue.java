@@ -1409,6 +1409,8 @@ public class LeafQueue extends AbstractCSQueue {
       MutableObject allocatedContainer) {
     if (canAssign(application, priority, node, NodeType.NODE_LOCAL, 
         reservedContainer)) {
+        System.out.println(" ");
+        System.out.println("----- LOCAL -----");
       return assignContainer(clusterResource, node, application, priority,
           nodeLocalResourceRequest, NodeType.NODE_LOCAL, reservedContainer,
           needToUnreserve, allocatedContainer);
@@ -1424,6 +1426,8 @@ public class LeafQueue extends AbstractCSQueue {
       MutableObject allocatedContainer) {
     if (canAssign(application, priority, node, NodeType.RACK_LOCAL,
         reservedContainer)) {
+        System.out.println(" ");
+        System.out.println("----- RACK -----");
       return assignContainer(clusterResource, node, application, priority,
           rackLocalResourceRequest, NodeType.RACK_LOCAL, reservedContainer,
           needToUnreserve, allocatedContainer);
@@ -1439,6 +1443,8 @@ public class LeafQueue extends AbstractCSQueue {
       MutableObject allocatedContainer) {
     if (canAssign(application, priority, node, NodeType.OFF_SWITCH,
         reservedContainer)) {
+        System.out.println(" ");
+        System.out.println("----- ANY -----");
       return assignContainer(clusterResource, node, application, priority,
           offSwitchResourceRequest, NodeType.OFF_SWITCH, reservedContainer,
           needToUnreserve, allocatedContainer);
@@ -1617,7 +1623,38 @@ public class LeafQueue extends AbstractCSQueue {
         }
       }
 
-      // Inform the application
+        // ADS CHANGES
+        if (request.getResourceRequestContext().get("taskAttemptID") != null) {
+            String[] taskAttemptIDList = request.getResourceRequestContext().get("taskAttemptID").split(":");
+
+            for (String taskAttemptId : taskAttemptIDList) {
+                if(!this.processedTaskAttemptIds.contains(taskAttemptId)) {
+                    this.seenTaskAttemptIds.add(taskAttemptId);
+                }
+            }
+
+            for (String taskAttemptId : taskAttemptIDList) {
+                if (!this.processedTaskAttemptIds.contains(taskAttemptId)) {
+                    container.addContainerContext("taskAttemptID", taskAttemptId);
+                    this.processedTaskAttemptIds.add(taskAttemptId);
+                    this.seenTaskAttemptIds.remove(taskAttemptId);
+                    break;
+                }
+            }
+
+            if(container.getContainerContext().get("taskAttemptID") == null) {
+                return Resources.none();
+            }
+
+            System.out.println(" ");
+            System.out.println("------------------------ LEAF QUEUE START ------------------------");
+            System.out.println("Resource Request: " + request.requestResourceToNewString());
+            System.out.println("Container Allocated: " + container.containerToNewString());
+            System.out.println("------------------------ LEAF QUEUE END ------------------------");
+            System.out.println(" ");
+        }
+
+        // Inform the application
       RMContainer allocatedContainer = 
           application.allocate(type, node, priority, request, container);
 
@@ -1635,65 +1672,6 @@ public class LeafQueue extends AbstractCSQueue {
           " queue=" + this + 
           " clusterResource=" + clusterResource);
       createdContainer.setValue(allocatedContainer);
-
-
-        if (request.getResourceRequestContext().get("taskAttemptID") != null && request.getPriority().getPriority() == 20) {
-            String assignedTaskID = null;
-            String[] taskAttemptIDList = request.getResourceRequestContext().get("taskAttemptID").split(":");
-            System.out.println("TEJ: Incoming resource Request");
-            System.out.println(request.toString());
-            System.out.println("TEJ: Incoming resource Request");
-            System.out.println(request.requestResourceToNewString());
-
-            for (String taskAttemptId : taskAttemptIDList) {
-                if(!this.processedTaskAttemptIds.contains(taskAttemptId)) {
-                    this.seenTaskAttemptIds.add(taskAttemptId);
-                }
-            }
-
-            for (String taskAttemptId : taskAttemptIDList) {
-                if (!this.processedTaskAttemptIds.contains(taskAttemptId)) {
-                    assignedTaskID = taskAttemptId;
-                    container.addContainerContext("taskAttemptID", taskAttemptId);
-                    this.processedTaskAttemptIds.add(taskAttemptId);
-                    this.seenTaskAttemptIds.remove(taskAttemptId);
-                    System.out.println("TEJ: TaskAttemptID in seenTaskAttemptId: " + taskAttemptId);
-                    System.out.println("TEJ: Container after taskAttemptId insertion");
-                    System.out.println(container.containerToNewString());
-                    break;
-                }
-            }
-
-            if(container.getContainerContext().get("taskAttemptID") == null) {
-                if (this.seenTaskAttemptIds.size() != 0) {
-                    System.out.println("TEJ: ANY");
-                    String taskAttemptId = Collections.min(this.seenTaskAttemptIds);
-                    assignedTaskID = taskAttemptId;
-                    container.addContainerContext("taskAttemptID", taskAttemptId);
-                    this.processedTaskAttemptIds.add(taskAttemptId);
-                    this.seenTaskAttemptIds.remove(taskAttemptId);
-                } else {
-                    if (assignedTaskID != null) {
-                        container.resetContext("taskAttemptID");
-                        seenTaskAttemptIds.add(assignedTaskID);
-                        processedTaskAttemptIds.remove(assignedTaskID);
-                    }
-                    return Resources.none();
-                }
-            }
-        } else {
-            System.out.println("TEJ NULL: Incoming request has taskId as NULL ");
-            System.out.println(request.toString());
-        }
-
-        if (container.getContainerContext().get("taskAttemptID") == null){
-            System.out.println("TEJ NULL: Container has taskId as NULL ");
-            System.out.println(container.toString());
-            System.out.println("TEJ NULL: The Incoming Resource Request");
-            System.out.println(request.toString());
-            System.out.println(request.getResourceRequestContext().get("taskAttemptID"));
-        }
-
         return container.getResource();
     } else {
       // if we are allowed to allocate but this node doesn't have space, reserve it or
@@ -1865,8 +1843,8 @@ public class LeafQueue extends AbstractCSQueue {
     
     // Update metrics
     CSQueueUtils.updateQueueStatistics(
-        resourceCalculator, this, getParent(), clusterResource, 
-        minimumAllocation);
+            resourceCalculator, this, getParent(), clusterResource,
+            minimumAllocation);
 
     // queue metrics are updated, more resource may be available
     // activate the pending applications if possible

@@ -486,10 +486,6 @@ public class ApplicationMasterService extends AbstractService implements
       // set label expression for Resource Requests if resourceName=ANY
       ApplicationSubmissionContext asc = app.getApplicationSubmissionContext();
       for (ResourceRequest req : ask) {
-          System.out.println("");
-          System.out.println("----------- Application Master Service Start -----------");
-          System.out.println("Received ResourceRequest with context: " + req.requestResourceToNewString());
-          System.out.println("----------- Application Master Service End -----------");
         if (null == req.getNodeLabelExpression()
             && ResourceRequest.ANY.equals(req.getResourceName())) {
           req.setNodeLabelExpression(asc.getNodeLabelExpression());

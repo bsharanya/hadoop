@@ -8,9 +8,9 @@ public aspect ResourceRequestExtensionAspect {
     public Map<String, String> ResourceRequest.resourceRequestContext = null;
 
     public String ResourceRequest.requestResourceToNewString() {
-            return "Resource Request: [ Location: " + getResourceName()
+            return "Resource Request: [ Priority: " + getPriority().getPriority() + ", Location: " + getResourceName()
                 + ", Relax Locality: " + getRelaxLocality() + ", Number of Containers: " + getNumContainers()
-                    + "TaskAttempt ID(s): " + getResourceRequestContext().get("taskAttemptID") +  " ]";
+                    + ", TaskAttempt ID(s): " + getResourceRequestContext().get("taskAttemptID") +  " ]";
     }
 
     public void ResourceRequest.addResourceRequestContext(String key, String value){

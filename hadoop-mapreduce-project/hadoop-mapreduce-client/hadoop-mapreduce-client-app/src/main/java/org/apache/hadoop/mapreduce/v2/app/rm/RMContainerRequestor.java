@@ -196,6 +196,18 @@ public abstract class RMContainerRequestor extends RMCommunicator {
         AllocateRequest.newInstance(lastResponseID,
           super.getApplicationProgress(), new ArrayList<ResourceRequest>(ask),
           new ArrayList<ContainerId>(release), blacklistRequest);
+
+      // ADS CHANGES
+      if (ask.size() > 0) {
+          System.out.println(" ");
+          System.out.println("------------- MAKE REMOTE REQUEST START -------------");
+          for (ResourceRequest resourceRequest : ask) {
+              System.out.println("Resource requested: " + resourceRequest.requestResourceToNewString());
+          }
+          System.out.println("------------- MAKE REMOTE REQUEST END -------------");
+          System.out.println(" ");
+      }
+
     AllocateResponse allocateResponse = scheduler.allocate(allocateRequest);
     lastResponseID = allocateResponse.getResponseId();
     availableResources = allocateResponse.getAvailableResources();

@@ -13,12 +13,8 @@ public aspect MapTaskContainerExtensionAspect percflow(wormholeForMap(ContainerR
     && addResourceRequestForMap(req);
 
     after(ContainerRequestEvent reqEvent, ResourceRequest req) : wormholeForMap(reqEvent, req) {
-        System.out.println("");
-        System.out.println("******** Map Task Extension Aspect Start ********");
         TaskAttemptId taskAttemptId = reqEvent.getAttemptID();
         req.addResourceRequestContext("taskAttemptID", taskAttemptId.toString());
-        System.out.println(req.requestResourceToNewString());
-        System.out.println("******** Map Task Extension Aspect End ********");
     }
 }
 
