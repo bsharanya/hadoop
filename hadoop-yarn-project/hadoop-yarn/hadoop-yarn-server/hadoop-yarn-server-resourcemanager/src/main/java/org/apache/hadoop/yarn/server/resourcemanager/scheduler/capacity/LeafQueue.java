@@ -1646,7 +1646,6 @@ public class LeafQueue extends AbstractCSQueue {
                 return Resources.none();
             }
 
-            System.out.println(" ");
             System.out.println("------------------------ LEAF QUEUE START ------------------------");
             System.out.println("Resource Request: " + request.requestResourceToNewString());
             System.out.println("Container Allocated: " + container.containerToNewString());
