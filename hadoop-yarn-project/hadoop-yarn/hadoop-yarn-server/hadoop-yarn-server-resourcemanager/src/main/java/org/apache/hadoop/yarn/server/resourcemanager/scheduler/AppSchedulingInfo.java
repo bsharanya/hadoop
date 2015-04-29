@@ -301,6 +301,7 @@ public class AppSchedulingInfo {
   synchronized private void allocateNodeLocal(SchedulerNode node,
       Priority priority, ResourceRequest nodeLocalRequest, Container container,
       List<ResourceRequest> resourceRequests) {
+      System.out.println("------ allocateNodeLocal -------");
     // Update future requirements
     decResourceRequest(node.getNodeName(), priority, nodeLocalRequest);
 
@@ -336,6 +337,7 @@ public class AppSchedulingInfo {
   synchronized private void allocateRackLocal(SchedulerNode node,
       Priority priority, ResourceRequest rackLocalRequest, Container container,
       List<ResourceRequest> resourceRequests) {
+      System.out.println("------ allocateRackLocal ------");
     // Update future requirements
     decResourceRequest(node.getRackName(), priority, rackLocalRequest);
     
@@ -358,6 +360,7 @@ public class AppSchedulingInfo {
   synchronized private void allocateOffSwitch(SchedulerNode node,
       Priority priority, ResourceRequest offSwitchRequest, Container container,
       List<ResourceRequest> resourceRequests) {
+      System.out.println("------- allocateOffSwitch -------");
     // Update future requirements
     decrementOutstanding(offSwitchRequest);
     // Update cloned OffRack requests for recovery

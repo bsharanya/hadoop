@@ -147,7 +147,7 @@ public abstract class SchedulerNode {
     Container container = rmContainer.getContainer();
     deductAvailableResource(container.getResource());
     ++numContainers;
-
+      System.out.println("----- allocateContainer -----");
     launchedContainers.put(container.getId(), rmContainer);
 
     LOG.info("Assigned container " + container.getId() + " of capacity "

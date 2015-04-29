@@ -389,6 +389,7 @@ public abstract class RMContainerRequestor extends RMCommunicator {
     // Create resource requests
     for (String host : req.hosts) {
       // Data-local
+        System.out.println("----- REQUESTOR: creating DATA_LOCAL Resource Request -------");
       if (!isNodeBlacklisted(host)) {
         addResourceRequest(req.priority, host, req.capability);
       }      
@@ -396,10 +397,12 @@ public abstract class RMContainerRequestor extends RMCommunicator {
 
     // Nothing Rack-local for now
     for (String rack : req.racks) {
+        System.out.println("----- REQUESTOR: creating RACK_LOCAL Resource Request -------");
       addResourceRequest(req.priority, rack, req.capability);
     }
 
     // Off-switch
+      System.out.println("----- REQUESTOR: creating ANY_LOCAL Resource Request -------");
     addResourceRequest(req.priority, ResourceRequest.ANY, req.capability);
   }
 
