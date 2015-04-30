@@ -1235,10 +1235,10 @@ public class RMContainerAllocator extends RMContainerRequestor
                 // hence this while loop would almost always have O(1) complexity
                 String host = allocated.getNodeId().getHost();
                 String rack = RackResolver.resolve(host).getNetworkLocation();
-                String taskAttemptID = allocated.getContainerContext().get("taskAttemptID");
+                String containerTaskAttemptID = allocated.getContainerContext().get("taskAttemptID");
                 for (TaskAttemptId taskAttemptId : maps.keySet()) {
 //                    if (taskId.equals(taskAttemptId.getTaskId().toString())) {
-                    if (taskAttemptID.equals(taskAttemptId.toString())) {
+                    if (containerTaskAttemptID.equals(taskAttemptId.toString())) {
                         ContainerRequest assigned = maps.remove(taskAttemptId);
                         containerAssigned(allocated, assigned);
                         it.remove();
@@ -1252,6 +1252,12 @@ public class RMContainerAllocator extends RMContainerRequestor
                             if (LOG.isDebugEnabled()) {
                                 LOG.debug("Assigned based on host match " + host);
                             }
+                            LinkedList<TaskAttemptId> list = mapsHostMapping.get(host);
+                            for (TaskAttemptId attemptId : list) {
+                                if (containerTaskAttemptID.equals(attemptId.toString())) {
+                                    list.remove(attemptId);
+                                }
+                            }
                         } else if (containerIsRackLocal(assigned, rack)) {
                             System.out.println("RACK LOCAL: Container Allocated: " + allocated.containerToNewString());
                             JobCounterUpdateEvent jce =
@@ -1261,6 +1267,12 @@ public class RMContainerAllocator extends RMContainerRequestor
                             rackLocalAssigned++;
                             if (LOG.isDebugEnabled()) {
                                 LOG.debug("Assigned based on rack match " + host);
+                            }
+                            LinkedList<TaskAttemptId> list = mapsRackMapping.get(rack);
+                            for (TaskAttemptId attemptId : list) {
+                                if (containerTaskAttemptID.equals(attemptId.toString())) {
+                                    list.remove(attemptId);
+                                }
                             }
                         } else {
                             System.out.println("ANY: Container Allocated: " + allocated.containerToNewString());

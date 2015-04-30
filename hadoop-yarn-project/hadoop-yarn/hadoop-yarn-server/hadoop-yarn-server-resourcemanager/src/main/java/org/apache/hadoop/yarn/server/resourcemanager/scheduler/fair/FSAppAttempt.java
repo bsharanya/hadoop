@@ -19,13 +19,7 @@
 package org.apache.hadoop.yarn.server.resourcemanager.scheduler.fair;
 
 import java.io.Serializable;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -77,6 +71,8 @@ public class FSAppAttempt extends SchedulerApplicationAttempt
   private Resource preemptedResources = Resources.createResource(0);
   private RMContainerComparator comparator = new RMContainerComparator();
   private final Map<RMContainer, Long> preemptionMap = new HashMap<RMContainer, Long>();
+  private HashSet<String> seenTaskAttemptIds = new HashSet<>();
+  private HashSet<String> processedTaskAttemptIds = new HashSet<>();
 
   /**
    * Delay scheduling: We often want to prioritize scheduling of node-local
@@ -487,6 +483,7 @@ public class FSAppAttempt extends SchedulerApplicationAttempt
   private Resource assignContainer(
       FSSchedulerNode node, ResourceRequest request, NodeType type,
       boolean reserved) {
+    System.out.println("--------- ASSIGN-CONTAINER ADD ATTEMPT ID TO CONTAINER --------" );
 
     // How much does this request need?
     Resource capability = request.getCapability();
@@ -528,6 +525,36 @@ public class FSAppAttempt extends SchedulerApplicationAttempt
         setAmRunning(true);
       }
 
+      // ADS CHANGES
+      if (request.getResourceRequestContext().get("taskAttemptID") != null && request.getPriority().getPriority() == 20) {
+          String[] taskAttemptIDList = request.getResourceRequestContext().get("taskAttemptID").split(":");
+
+          for (String taskAttemptId : taskAttemptIDList) {
+              if(!this.processedTaskAttemptIds.contains(taskAttemptId)) {
+                  this.seenTaskAttemptIds.add(taskAttemptId);
+              }
+          }
+
+          for (String taskAttemptId : taskAttemptIDList) {
+              if (!this.processedTaskAttemptIds.contains(taskAttemptId)) {
+                  container.addContainerContext("taskAttemptID", taskAttemptId);
+                  this.processedTaskAttemptIds.add(taskAttemptId);
+                  this.seenTaskAttemptIds.remove(taskAttemptId);
+                  break;
+              }
+          }
+
+          if(container.getContainerContext().get("taskAttemptID") == null) {
+              return Resources.none();
+          }
+
+          System.out.println("------------------------ LEAF QUEUE START ------------------------");
+          System.out.println("Resource Request: " + request.requestResourceToNewString());
+          System.out.println("Container Allocated: " + container.containerToNewString());
+          System.out.println("------------------------ LEAF QUEUE END ------------------------");
+          System.out.println(" ");
+      }
+
       return container.getResource();
     } else {
       if (!FairScheduler.fitsInMaxShare(getQueue(), capability)) {
@@ -563,7 +590,9 @@ public class FSAppAttempt extends SchedulerApplicationAttempt
             !hasContainerForNode(priority, node)) {
           continue;
         }
-
+          System.out.println();
+          System.out.println();
+          System.out.println("--------- ASSIGN-CONTAINER DELAY MECHANISM ----------");
         addSchedulingOpportunity(priority);
 
         // Check the AM resource usage for the leaf queue
@@ -575,8 +604,16 @@ public class FSAppAttempt extends SchedulerApplicationAttempt
 
         ResourceRequest rackLocalRequest = getResourceRequest(priority,
             node.getRackName());
+
+        if (rackLocalRequest!=null){
+            System.out.println("RackLocalRequest: " + rackLocalRequest.requestResourceToNewString());
+        }
         ResourceRequest localRequest = getResourceRequest(priority,
             node.getNodeName());
+
+        if (localRequest!=null){
+            System.out.println("NodeLocalRequest: " + localRequest.requestResourceToNewString());
+        }
 
         if (localRequest != null && !localRequest.getRelaxLocality()) {
           LOG.warn("Relax locality off is not supported on local request: "
@@ -590,6 +627,8 @@ public class FSAppAttempt extends SchedulerApplicationAttempt
               scheduler.getRackLocalityDelayMs(),
               scheduler.getClock().getTime());
         } else {
+          System.out.println();
+          System.out.println(" ---- getAllowedLocalityLevel ---- ");
           allowedLocality = getAllowedLocalityLevel(priority,
               scheduler.getNumClusterNodes(),
               scheduler.getNodeLocalityThreshold(),
@@ -615,6 +654,10 @@ public class FSAppAttempt extends SchedulerApplicationAttempt
 
         ResourceRequest offSwitchRequest =
             getResourceRequest(priority, ResourceRequest.ANY);
+        if (offSwitchRequest!=null){
+            System.out.println("offSwitchRequest: " + offSwitchRequest.requestResourceToNewString());
+        }
+
         if (offSwitchRequest != null && !offSwitchRequest.getRelaxLocality()) {
           continue;
         }
