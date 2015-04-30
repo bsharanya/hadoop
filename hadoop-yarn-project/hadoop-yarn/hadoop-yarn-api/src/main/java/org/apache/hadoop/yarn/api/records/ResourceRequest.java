@@ -75,19 +75,6 @@ public abstract class ResourceRequest implements Comparable<ResourceRequest> {
         relaxLocality, null);
   }
 
-//  @Public
-//  @Stable
-//  public static ResourceRequest newInstance(Priority priority, String hostName,
-//      Resource capability, int numContainers, boolean relaxLocality,
-//      String labelExpression) {
-//      return newInstance(priority, hostName, capability, numContainers,
-//              relaxLocality, labelExpression, null);
-//  }
-//   @Public
-//  @Stable
-//  public static ResourceRequest newInstance(Priority priority, String hostName,
-//      Resource capability, int numContainers, boolean relaxLocality,
-//      String labelExpression, String attemptId) {
   @Public
   @Stable
   public static ResourceRequest newInstance(Priority priority, String hostName,
@@ -100,7 +87,6 @@ public abstract class ResourceRequest implements Comparable<ResourceRequest> {
     request.setNumContainers(numContainers);
     request.setRelaxLocality(relaxLocality);
     request.setNodeLabelExpression(labelExpression);
-//    request.setAttemptId(attemptId);
     return request;
   }
 
@@ -225,25 +211,6 @@ public abstract class ResourceRequest implements Comparable<ResourceRequest> {
   @Public
   @Stable
   public abstract void setNumContainers(int numContainers);
-
-
-   /**
-   * Get the taskId required with the given specifications.
-   * @return taskId required with the given specifications
-   */
-   @Public
-   @Stable
-   public abstract String getAttemptId();
-
-   /**
-   * Set the taskId of containers required with the given specifications
-   * @param attemptId of containers required with the given
-   *                      specifications
-   */
-   @Public
-   @Stable
-   public abstract void setAttemptId(String attemptId);
-
 
   /**
    * Get whether locality relaxation is enabled with this
