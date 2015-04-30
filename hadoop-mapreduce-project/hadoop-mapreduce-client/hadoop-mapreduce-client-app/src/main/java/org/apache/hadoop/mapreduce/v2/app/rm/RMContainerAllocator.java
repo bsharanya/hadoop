@@ -1240,8 +1240,10 @@ public class RMContainerAllocator extends RMContainerRequestor
           TaskAttemptId tId = list.removeFirst();
           if (maps.containsKey(tId)) {
             ContainerRequest assigned = maps.remove(tId);
-              System.out.println("----- DATA_LOCAL -----");
-              System.out.println("Container Request: " + assigned.toString());
+              System.out.println();
+              System.out.println();
+              System.out.println("----- Allocator: DATA_LOCAL -----");
+              System.out.println("Allocator: Container Request: " + assigned.toString());
             containerAssigned(allocated, assigned);
             it.remove();
             JobCounterUpdateEvent jce =
@@ -1272,8 +1274,10 @@ public class RMContainerAllocator extends RMContainerRequestor
           TaskAttemptId tId = list.removeFirst();
           if (maps.containsKey(tId)) {
             ContainerRequest assigned = maps.remove(tId);
-              System.out.println("----- RACK_LOCAL -----");
-              System.out.println("Container Request: " + assigned.toString());
+              System.out.println();
+              System.out.println();
+              System.out.println("----- Allocator: RACK_LOCAL -----");
+              System.out.println("Allocator: Container Request: " + assigned.toString());
             containerAssigned(allocated, assigned);
             it.remove();
             JobCounterUpdateEvent jce =
@@ -1297,8 +1301,10 @@ public class RMContainerAllocator extends RMContainerRequestor
         assert PRIORITY_MAP.equals(priority);
         TaskAttemptId tId = maps.keySet().iterator().next();
         ContainerRequest assigned = maps.remove(tId);
-          System.out.println("----- OTHER_LOCAL -----");
-          System.out.println("Container Request: " + assigned.toString());
+          System.out.println();
+          System.out.println();
+          System.out.println("----- Allocator: OTHER_LOCAL -----");
+          System.out.println("Allocator: Container Request: " + assigned.toString());
         containerAssigned(allocated, assigned);
         it.remove();
         JobCounterUpdateEvent jce =

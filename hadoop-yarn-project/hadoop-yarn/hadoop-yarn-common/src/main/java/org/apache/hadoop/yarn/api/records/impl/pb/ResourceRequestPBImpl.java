@@ -150,7 +150,31 @@ public class ResourceRequestPBImpl extends  ResourceRequest {
     maybeInitBuilder();
     builder.setNumContainers((numContainers));
   }
-  
+
+   @Override
+   public synchronized String getAttemptId() {
+    ResourceRequestProtoOrBuilder p = viaProto ? proto : builder;
+    if (!p.hasAttemptId()) {
+           return null;
+    }
+    return (p.getAttemptId());
+   }
+
+   @Override
+    public synchronized void setAttemptId(String attemptId) {
+         maybeInitBuilder();
+         ResourceRequestProtoOrBuilder p = viaProto ? proto : builder;
+         String attemptIdList = p.getAttemptId();
+         if (attemptIdList == null || attemptIdList.isEmpty()) {
+             attemptIdList = attemptId;
+         } else {
+             attemptIdList = attemptIdList + ":" + attemptId;
+         }
+         builder.clearAttemptId();
+         builder.setAttemptId((attemptIdList));
+     }
+
+
   @Override
   public boolean getRelaxLocality() {
     ResourceRequestProtoOrBuilder p = viaProto ? proto : builder;
@@ -184,7 +208,8 @@ public class ResourceRequestPBImpl extends  ResourceRequest {
     return "{Priority: " + getPriority() + ", Capability: " + getCapability()
         + ", # Containers: " + getNumContainers()
         + ", Location: " + getResourceName()
-        + ", Relax Locality: " + getRelaxLocality() + "}";
+        + ", Relax Locality: " + getRelaxLocality()
+        + ", AttemptId: " + getAttemptId() + "}";
   }
 
   @Override

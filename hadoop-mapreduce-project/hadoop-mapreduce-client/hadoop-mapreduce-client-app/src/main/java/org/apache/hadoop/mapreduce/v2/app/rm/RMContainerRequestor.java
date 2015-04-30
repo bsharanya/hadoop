@@ -389,21 +389,31 @@ public abstract class RMContainerRequestor extends RMCommunicator {
     // Create resource requests
     for (String host : req.hosts) {
       // Data-local
+        System.out.println();
+        System.out.println();
         System.out.println("----- REQUESTOR: creating DATA_LOCAL Resource Request -------");
       if (!isNodeBlacklisted(host)) {
-        addResourceRequest(req.priority, host, req.capability);
+//        addResourceRequest(req.priority, host, req.capability);
+          addResourceRequest(req.priority, host, req.capability, "(DL)" + req.attemptID.toString());
       }      
     }
 
     // Nothing Rack-local for now
     for (String rack : req.racks) {
+        System.out.println();
+        System.out.println();
         System.out.println("----- REQUESTOR: creating RACK_LOCAL Resource Request -------");
-      addResourceRequest(req.priority, rack, req.capability);
+//      addResourceRequest(req.priority, rack, req.capability);
+        addResourceRequest(req.priority, rack, req.capability, "(RL)" + req.attemptID.toString());
     }
 
+
     // Off-switch
+      System.out.println();
+      System.out.println();
       System.out.println("----- REQUESTOR: creating ANY_LOCAL Resource Request -------");
-    addResourceRequest(req.priority, ResourceRequest.ANY, req.capability);
+//    addResourceRequest(req.priority, ResourceRequest.ANY, req.capability);
+      addResourceRequest(req.priority, ResourceRequest.ANY, req.capability, "(AL)" + req.attemptID.toString());
   }
 
   protected void decContainerReq(ContainerRequest req) {
@@ -420,7 +430,8 @@ public abstract class RMContainerRequestor extends RMCommunicator {
   }
 
   private void addResourceRequest(Priority priority, String resourceName,
-      Resource capability) {
+//      Resource capability) {
+        Resource capability, String attemptId) {
     Map<String, Map<Resource, ResourceRequest>> remoteRequests =
       this.remoteRequestsTable.get(priority);
     if (remoteRequests == null) {
@@ -445,6 +456,9 @@ public abstract class RMContainerRequestor extends RMCommunicator {
       reqMap.put(capability, remoteRequest);
     }
     remoteRequest.setNumContainers(remoteRequest.getNumContainers() + 1);
+    remoteRequest.setAttemptId(attemptId);
+
+      System.out.println("---- Requestor: addResourceRequest remoteRequest: " + remoteRequest.toString() + "-----");
 
     // Note this down for next interaction with ResourceManager
     addResourceRequestToAsk(remoteRequest);
