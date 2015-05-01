@@ -611,6 +611,8 @@ public class FSAppAttempt extends SchedulerApplicationAttempt
             System.out.println();
             System.out.println();
             System.out.println("---------- FSAppAttempt: getAllowedLocalityLevelByTime -----------");
+            System.out.println("NodeLocalityDelay: " + scheduler.getNodeLocalityDelayMs());
+            System.out.println("RackLocalityDelay: " + scheduler.getRackLocalityDelayMs());
           allowedLocality = getAllowedLocalityLevelByTime(priority,
               scheduler.getNodeLocalityDelayMs(),
               scheduler.getRackLocalityDelayMs(),
