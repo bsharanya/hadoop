@@ -622,10 +622,14 @@ public class FSAppAttempt extends SchedulerApplicationAttempt
 
         NodeType allowedLocality;
         if (scheduler.isContinuousSchedulingEnabled()) {
+            System.out.println(" ---- ContinuousSchedulingEnabled ------");
+            System.out.println("NodeLocalityDelay: " + scheduler.getNodeLocalityDelayMs());
+            System.out.println("RackLocalityDelay: " + scheduler.getRackLocalityDelayMs());
           allowedLocality = getAllowedLocalityLevelByTime(priority,
               scheduler.getNodeLocalityDelayMs(),
               scheduler.getRackLocalityDelayMs(),
               scheduler.getClock().getTime());
+            System.out.println("AllowedLocality: " + allowedLocality.toString());
         } else {
           System.out.println();
           System.out.println(" ---- getAllowedLocalityLevel ---- ");
@@ -633,7 +637,9 @@ public class FSAppAttempt extends SchedulerApplicationAttempt
               scheduler.getNumClusterNodes(),
               scheduler.getNodeLocalityThreshold(),
               scheduler.getRackLocalityThreshold());
+            System.out.println("AllowedLocality: " + allowedLocality.toString());
         }
+
 
         if (rackLocalRequest != null && rackLocalRequest.getNumContainers() != 0
             && localRequest != null && localRequest.getNumContainers() != 0) {
