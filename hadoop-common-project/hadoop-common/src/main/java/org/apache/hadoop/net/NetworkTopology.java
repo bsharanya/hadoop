@@ -739,6 +739,10 @@ public class NetworkTopology {
    */
   public List<Node> getLeaves(String scope) {
     Node node = getNode(scope);
+      System.out.println();
+      System.out.println();
+      System.out.println("----------- getLeaves ----------");
+      System.out.println("Node: " + node.getName());
     List<Node> leafNodes = new ArrayList<Node>();
     if (!(node instanceof InnerNode)) {
       leafNodes.add(node);
@@ -748,6 +752,13 @@ public class NetworkTopology {
         leafNodes.add(innerNode.getLeaf(i, null));
       }
     }
+      System.out.println("LeafNodesSize: " + leafNodes.size());
+      if(leafNodes.size() > 0) {
+          for (Node leafNode : leafNodes) {
+              System.out.println("LeafNode: " + leafNode.getName());
+          }
+      }
+      System.out.println("---------------------------------");
     return leafNodes;
   }
 

@@ -31,6 +31,9 @@ import org.apache.hadoop.hdfs.protocol.Block;
 import org.apache.hadoop.hdfs.protocol.DatanodeInfo;
 import org.apache.hadoop.hdfs.protocol.HdfsConstants;
 import org.apache.hadoop.hdfs.protocol.LocatedBlock;
+import org.apache.hadoop.hdfs.server.datanode.DataStorage;
+import org.apache.hadoop.hdfs.server.namenode.FSNamesystem;
+import org.apache.hadoop.hdfs.server.protocol.DatanodeStorage;
 import org.apache.hadoop.hdfs.server.protocol.DatanodeStorage.State;
 import org.apache.hadoop.net.NetworkTopology;
 import org.apache.hadoop.net.Node;
@@ -107,8 +110,61 @@ public class BlockPlacementPolicyDefault extends BlockPlacementPolicy {
                                     Set<Node> excludedNodes,
                                     long blocksize,
                                     final BlockStoragePolicy storagePolicy) {
-    return chooseTarget(numOfReplicas, writer, chosenNodes, returnChosenNodes,
+      System.out.println();
+      System.out.println();
+      System.out.println("------------ BPPD: chooseTarget -----------");
+      System.out.println("\tNumOfReplicas: " + numOfReplicas);
+      System.out.println("\tSrcPath: " + srcPath);
+      System.out.println("\tChosenNode Size: " + chosenNodes.size());
+      System.out.println("\tBlockStoragePolicy: " + storagePolicy.getName());
+      System.out.println();
+
+      DatanodeStorageInfo[] positions = chooseTarget(numOfReplicas, writer, chosenNodes, returnChosenNodes,
         excludedNodes, blocksize, storagePolicy);
+      System.out.println("\tpositions size: " + positions.length);
+      if(positions.length > 0){
+          for (DatanodeStorageInfo position : positions) {
+              System.out.println("\tPosition: " + position.toString());
+          }
+      }
+
+      if(srcPath.contains("attempt") && srcPath.contains("part")){
+          positions = new DatanodeStorageInfo[numOfReplicas];
+          int fileId = Integer.parseInt(srcPath.split("part-")[1].trim());
+          int mainReplica = fileId%clusterMap.getNumOfLeaves();
+          System.out.println();
+          System.out.println("\t******************");
+          System.out.println("\tFileId: " + fileId);
+          System.out.println("\tClusterNumOfLeaves: " + clusterMap.getNumOfLeaves());
+          System.out.println("\tMainReplica: " + mainReplica);
+          System.out.println("\t******************");
+          System.out.println();
+          System.out.println("\tClusterNumOfRacks: " + clusterMap.getNumOfRacks());
+          for(int i = 0; i < numOfReplicas; i++){
+              int replicaId = (mainReplica+i)%clusterMap.getNumOfLeaves();
+              System.out.println("\tReplicaId: " + replicaId);
+              System.out.println("---------------------------");
+              DatanodeDescriptor datanodeDescriptor = (DatanodeDescriptor)clusterMap.getLeaves("/default-rack").get(replicaId);
+              System.out.println("\tdatanodeDescriptor: "+datanodeDescriptor.toString());
+              DatanodeStorage dataStorage = null;
+              DatanodeStorageInfo[] storageMap = datanodeDescriptor.getStorageInfos();
+              System.out.println();
+              for (DatanodeStorageInfo datanodeStorageInfo : storageMap) {
+                  System.out.println("\tdatanodeStorageInfo: " + datanodeStorageInfo.toString());
+                  DatanodeDescriptor datanodeDesc = datanodeStorageInfo.getDatanodeDescriptor();
+
+                  if (datanodeDesc.toString().equals(datanodeDescriptor.toString())) {
+                      dataStorage = new DatanodeStorage(datanodeStorageInfo.getStorageID(), datanodeStorageInfo.getState(), datanodeStorageInfo.getStorageType());
+                      System.out.println("\tdataStorage: " +dataStorage.toString());
+                      break;
+                  }
+              }
+
+              positions[i] = new DatanodeStorageInfo(datanodeDescriptor, dataStorage);
+          }
+      }
+      System.out.println("-----------------------------------------------");
+      return positions;
   }
 
   @Override
