@@ -1409,8 +1409,6 @@ public class LeafQueue extends AbstractCSQueue {
       MutableObject allocatedContainer) {
     if (canAssign(application, priority, node, NodeType.NODE_LOCAL, 
         reservedContainer)) {
-        System.out.println(" ");
-        System.out.println("----- LOCAL -----");
       return assignContainer(clusterResource, node, application, priority,
           nodeLocalResourceRequest, NodeType.NODE_LOCAL, reservedContainer,
           needToUnreserve, allocatedContainer);
@@ -1426,8 +1424,6 @@ public class LeafQueue extends AbstractCSQueue {
       MutableObject allocatedContainer) {
     if (canAssign(application, priority, node, NodeType.RACK_LOCAL,
         reservedContainer)) {
-        System.out.println(" ");
-        System.out.println("----- RACK -----");
       return assignContainer(clusterResource, node, application, priority,
           rackLocalResourceRequest, NodeType.RACK_LOCAL, reservedContainer,
           needToUnreserve, allocatedContainer);
@@ -1443,8 +1439,6 @@ public class LeafQueue extends AbstractCSQueue {
       MutableObject allocatedContainer) {
     if (canAssign(application, priority, node, NodeType.OFF_SWITCH,
         reservedContainer)) {
-        System.out.println(" ");
-        System.out.println("----- ANY -----");
       return assignContainer(clusterResource, node, application, priority,
           offSwitchResourceRequest, NodeType.OFF_SWITCH, reservedContainer,
           needToUnreserve, allocatedContainer);
@@ -1624,7 +1618,7 @@ public class LeafQueue extends AbstractCSQueue {
       }
 
         // ADS CHANGES
-        if (request.getResourceRequestContext().get("taskAttemptID") != null) {
+        if (request.getResourceRequestContext().get("taskAttemptID") != null && request.getPriority().getPriority() == 20) {
             String[] taskAttemptIDList = request.getResourceRequestContext().get("taskAttemptID").split(":");
 
             for (String taskAttemptId : taskAttemptIDList) {
@@ -1645,12 +1639,6 @@ public class LeafQueue extends AbstractCSQueue {
             if(container.getContainerContext().get("taskAttemptID") == null) {
                 return Resources.none();
             }
-
-            System.out.println("------------------------ LEAF QUEUE START ------------------------");
-            System.out.println("Resource Request: " + request.requestResourceToNewString());
-            System.out.println("Container Allocated: " + container.containerToNewString());
-            System.out.println("------------------------ LEAF QUEUE END ------------------------");
-            System.out.println(" ");
         }
 
         // Inform the application

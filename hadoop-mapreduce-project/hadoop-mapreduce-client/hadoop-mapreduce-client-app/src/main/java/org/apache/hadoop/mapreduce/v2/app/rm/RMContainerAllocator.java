@@ -1223,8 +1223,6 @@ public class RMContainerAllocator extends RMContainerRequestor
         @SuppressWarnings("unchecked")
         private void assignMapsWithLocality(List<Container> allocatedContainers) {
             // ADS CHANGES
-            System.out.println("");
-            System.out.println("----------- ASSIGN MAPS WITH LOCALITY START -----------");
             // try to assign to all nodes first to match node local
             Iterator<Container> it = allocatedContainers.iterator();
             while (it.hasNext() && maps.size() > 0 && canAssignMaps()) {
@@ -1243,7 +1241,8 @@ public class RMContainerAllocator extends RMContainerRequestor
                         containerAssigned(allocated, assigned);
                         it.remove();
                         if (containerIsLocal(assigned, host)) {
-                            System.out.println("DATA LOCAL: Container Allocated: " + allocated.containerToNewString());
+                            LinkedList<TaskAttemptId> list = mapsHostMapping.get(host);
+                            list.remove(taskAttemptId);
                             JobCounterUpdateEvent jce =
                                     new JobCounterUpdateEvent(assigned.attemptID.getTaskId().getJobId());
                             jce.addCounterUpdate(JobCounter.DATA_LOCAL_MAPS, 1);
@@ -1253,7 +1252,9 @@ public class RMContainerAllocator extends RMContainerRequestor
                                 LOG.debug("Assigned based on host match " + host);
                             }
                         } else if (containerIsRackLocal(assigned, rack)) {
-                            System.out.println("RACK LOCAL: Container Allocated: " + allocated.containerToNewString());
+                            LinkedList<TaskAttemptId> list = mapsRackMapping.get(rack);
+                            list.remove(taskAttemptId);
+
                             JobCounterUpdateEvent jce =
                                     new JobCounterUpdateEvent(assigned.attemptID.getTaskId().getJobId());
                             jce.addCounterUpdate(JobCounter.RACK_LOCAL_MAPS, 1);
@@ -1263,7 +1264,6 @@ public class RMContainerAllocator extends RMContainerRequestor
                                 LOG.debug("Assigned based on rack match " + host);
                             }
                         } else {
-                            System.out.println("ANY: Container Allocated: " + allocated.containerToNewString());
                             JobCounterUpdateEvent jce =
                                     new JobCounterUpdateEvent(assigned.attemptID.getTaskId().getJobId());
                             jce.addCounterUpdate(JobCounter.OTHER_LOCAL_MAPS, 1);
@@ -1351,8 +1351,6 @@ public class RMContainerAllocator extends RMContainerRequestor
 //                    LOG.debug("Assigned based on * match");
 //                }
 //            }
-            System.out.println("----------- ASSIGN MAPS WITH LOCALITY END -----------");
-            System.out.println("");
         }
 
 
