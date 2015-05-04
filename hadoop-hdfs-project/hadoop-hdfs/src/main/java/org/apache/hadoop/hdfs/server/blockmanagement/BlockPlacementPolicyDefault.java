@@ -40,6 +40,7 @@ import org.apache.hadoop.net.Node;
 import org.apache.hadoop.net.NodeBase;
 
 import com.google.common.annotations.VisibleForTesting;
+import sun.swing.BakedArrayList;
 
 /**
  * The class is responsible for choosing the desired number of targets
@@ -140,11 +141,20 @@ public class BlockPlacementPolicyDefault extends BlockPlacementPolicy {
           System.out.println("\t******************");
           System.out.println();
           System.out.println("\tClusterNumOfRacks: " + clusterMap.getNumOfRacks());
+          List<Node> allDataNodes =  new ArrayList<Node>();
+          List<Node> leavesRackOne = clusterMap.getLeaves("/dc1/rack1");
+          List<Node> leavesRackTwo = clusterMap.getLeaves("/dc1/rack2");
+          if(leavesRackOne != null) {
+              allDataNodes.addAll(leavesRackOne);
+          }
+          if(leavesRackTwo != null) {
+              allDataNodes.addAll(leavesRackTwo);
+          }
           for(int i = 0; i < numOfReplicas; i++){
               int replicaId = (mainReplica+i)%clusterMap.getNumOfLeaves();
               System.out.println("\tReplicaId: " + replicaId);
               System.out.println("---------------------------");
-              DatanodeDescriptor datanodeDescriptor = (DatanodeDescriptor)clusterMap.getLeaves("/default-rack").get(replicaId);
+              DatanodeDescriptor datanodeDescriptor = (DatanodeDescriptor)allDataNodes.get(replicaId);
               System.out.println("\tdatanodeDescriptor: "+datanodeDescriptor.toString());
               DatanodeStorage dataStorage = null;
               DatanodeStorageInfo[] storageMap = datanodeDescriptor.getStorageInfos();
