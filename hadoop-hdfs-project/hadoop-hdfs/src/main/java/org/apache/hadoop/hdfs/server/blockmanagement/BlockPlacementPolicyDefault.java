@@ -111,21 +111,21 @@ public class BlockPlacementPolicyDefault extends BlockPlacementPolicy {
                                     Set<Node> excludedNodes,
                                     long blocksize,
                                     final BlockStoragePolicy storagePolicy) {
-      System.out.println();
-      System.out.println();
-      System.out.println("------------ BPPD: chooseTarget -----------");
-      System.out.println("\tNumOfReplicas: " + numOfReplicas);
-      System.out.println("\tSrcPath: " + srcPath);
-      System.out.println("\tChosenNode Size: " + chosenNodes.size());
-      System.out.println("\tBlockStoragePolicy: " + storagePolicy.getName());
-      System.out.println();
+      //System.out.println();
+      //System.out.println();
+      //System.out.println("------------ BPPD: chooseTarget -----------");
+      //System.out.println("\tNumOfReplicas: " + numOfReplicas);
+      //System.out.println("\tSrcPath: " + srcPath);
+      //System.out.println("\tChosenNode Size: " + chosenNodes.size());
+      //System.out.println("\tBlockStoragePolicy: " + storagePolicy.getName());
+      //System.out.println();
 
       DatanodeStorageInfo[] positions = chooseTarget(numOfReplicas, writer, chosenNodes, returnChosenNodes,
         excludedNodes, blocksize, storagePolicy);
-      System.out.println("\tpositions size: " + positions.length);
+      //System.out.println("\tpositions size: " + positions.length);
       if(positions.length > 0){
           for (DatanodeStorageInfo position : positions) {
-              System.out.println("\tPosition: " + position.toString());
+              //System.out.println("\tPosition: " + position.toString());
           }
       }
 
@@ -133,14 +133,14 @@ public class BlockPlacementPolicyDefault extends BlockPlacementPolicy {
           positions = new DatanodeStorageInfo[numOfReplicas];
           int fileId = Integer.parseInt(srcPath.split("part-")[1].trim());
           int mainReplica = fileId%clusterMap.getNumOfLeaves();
-          System.out.println();
-          System.out.println("\t******************");
-          System.out.println("\tFileId: " + fileId);
-          System.out.println("\tClusterNumOfLeaves: " + clusterMap.getNumOfLeaves());
-          System.out.println("\tMainReplica: " + mainReplica);
-          System.out.println("\t******************");
-          System.out.println();
-          System.out.println("\tClusterNumOfRacks: " + clusterMap.getNumOfRacks());
+          //System.out.println();
+          //System.out.println("\t******************");
+          //System.out.println("\tFileId: " + fileId);
+          //System.out.println("\tClusterNumOfLeaves: " + clusterMap.getNumOfLeaves());
+          //System.out.println("\tMainReplica: " + mainReplica);
+          //System.out.println("\t******************");
+          //System.out.println();
+          //System.out.println("\tClusterNumOfRacks: " + clusterMap.getNumOfRacks());
           List<Node> allDataNodes =  new ArrayList<Node>();
           List<Node> leavesRackOne = clusterMap.getLeaves("/dc1/rack1");
           List<Node> leavesRackTwo = clusterMap.getLeaves("/dc1/rack2");
@@ -152,20 +152,20 @@ public class BlockPlacementPolicyDefault extends BlockPlacementPolicy {
           }
           for(int i = 0; i < numOfReplicas; i++){
               int replicaId = (mainReplica+i)%clusterMap.getNumOfLeaves();
-              System.out.println("\tReplicaId: " + replicaId);
-              System.out.println("---------------------------");
+              //System.out.println("\tReplicaId: " + replicaId);
+              //System.out.println("---------------------------");
               DatanodeDescriptor datanodeDescriptor = (DatanodeDescriptor)allDataNodes.get(replicaId);
-              System.out.println("\tdatanodeDescriptor: "+datanodeDescriptor.toString());
+              //System.out.println("\tdatanodeDescriptor: "+datanodeDescriptor.toString());
               DatanodeStorage dataStorage = null;
               DatanodeStorageInfo[] storageMap = datanodeDescriptor.getStorageInfos();
-              System.out.println();
+              //System.out.println();
               for (DatanodeStorageInfo datanodeStorageInfo : storageMap) {
-                  System.out.println("\tdatanodeStorageInfo: " + datanodeStorageInfo.toString());
+                  //System.out.println("\tdatanodeStorageInfo: " + datanodeStorageInfo.toString());
                   DatanodeDescriptor datanodeDesc = datanodeStorageInfo.getDatanodeDescriptor();
 
                   if (datanodeDesc.toString().equals(datanodeDescriptor.toString())) {
                       dataStorage = new DatanodeStorage(datanodeStorageInfo.getStorageID(), datanodeStorageInfo.getState(), datanodeStorageInfo.getStorageType());
-                      System.out.println("\tdataStorage: " +dataStorage.toString());
+                      //System.out.println("\tdataStorage: " +dataStorage.toString());
                       break;
                   }
               }
@@ -173,7 +173,7 @@ public class BlockPlacementPolicyDefault extends BlockPlacementPolicy {
               positions[i] = new DatanodeStorageInfo(datanodeDescriptor, dataStorage);
           }
       }
-      System.out.println("-----------------------------------------------");
+      //System.out.println("-----------------------------------------------");
       return positions;
   }
 

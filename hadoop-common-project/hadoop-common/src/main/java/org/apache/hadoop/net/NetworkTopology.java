@@ -277,7 +277,15 @@ public class NetworkTopology {
      */
     private Node getLoc(String loc) {
       if (loc == null || loc.length() == 0) return this;
-            
+        //System.out.println();
+        //System.out.println("Incoming Loc: " + loc);
+        if(children.size() > 0) {
+            //System.out.println("Number of children: " + children.size());
+            for (Node child : children) {
+                //System.out.println("childNode: " + child.getName());
+            }
+        }
+        //System.out.println();
       String[] path = loc.split(PATH_SEPARATOR_STR, 2);
       Node childnode = null;
       for(int i=0; i<children.size(); i++) {
@@ -739,10 +747,10 @@ public class NetworkTopology {
    */
   public List<Node> getLeaves(String scope) {
     Node node = getNode(scope);
-      System.out.println();
-      System.out.println();
-      System.out.println("----------- getLeaves ----------");
-      System.out.println("Node: " + node.getName());
+      //System.out.println();
+      //System.out.println();
+      //System.out.println("----------- getLeaves ----------");
+      //System.out.println("Node: " + node.getName());
     List<Node> leafNodes = new ArrayList<Node>();
     if (!(node instanceof InnerNode)) {
       leafNodes.add(node);
@@ -752,13 +760,13 @@ public class NetworkTopology {
         leafNodes.add(innerNode.getLeaf(i, null));
       }
     }
-      System.out.println("LeafNodesSize: " + leafNodes.size());
+      //System.out.println("LeafNodesSize: " + leafNodes.size());
       if(leafNodes.size() > 0) {
           for (Node leafNode : leafNodes) {
-              System.out.println("LeafNode: " + leafNode.getName());
+              //System.out.println("LeafNode: " + leafNode.getName());
           }
       }
-      System.out.println("---------------------------------");
+      //System.out.println("---------------------------------");
     return leafNodes;
   }
 
