@@ -31,6 +31,7 @@ import org.apache.hadoop.hdfs.protocol.Block;
 import org.apache.hadoop.hdfs.protocol.DatanodeInfo;
 import org.apache.hadoop.hdfs.protocol.HdfsConstants;
 import org.apache.hadoop.hdfs.protocol.LocatedBlock;
+import org.apache.hadoop.hdfs.server.protocol.DatanodeStorage;
 import org.apache.hadoop.hdfs.server.protocol.DatanodeStorage.State;
 import org.apache.hadoop.net.NetworkTopology;
 import org.apache.hadoop.net.Node;
@@ -107,8 +108,40 @@ public class BlockPlacementPolicyDefault extends BlockPlacementPolicy {
                                     Set<Node> excludedNodes,
                                     long blocksize,
                                     final BlockStoragePolicy storagePolicy) {
-    return chooseTarget(numOfReplicas, writer, chosenNodes, returnChosenNodes,
-        excludedNodes, blocksize, storagePolicy);
+
+      DatanodeStorageInfo[] positions = chooseTarget(numOfReplicas, writer, chosenNodes, returnChosenNodes, excludedNodes, blocksize, storagePolicy);
+
+      if (srcPath.contains("attempt") && srcPath.contains("part")) {
+          positions = new DatanodeStorageInfo[numOfReplicas];
+          int fileId = Integer.parseInt(srcPath.split("part-")[1].trim());
+          int mainReplica = fileId % clusterMap.getNumOfLeaves();
+          List<Node> allDataNodes = new ArrayList<Node>();
+          List<Node> leavesRackOne = clusterMap.getLeaves("/dc1/rack1");
+          List<Node> leavesRackTwo = clusterMap.getLeaves("/dc1/rack2");
+          if (leavesRackOne != null) {
+              allDataNodes.addAll(leavesRackOne);
+          }
+          if (leavesRackTwo != null) {
+              allDataNodes.addAll(leavesRackTwo);
+          }
+          for (int i = 0; i < numOfReplicas; i++) {
+              int replicaId = (mainReplica + i) % clusterMap.getNumOfLeaves();
+              DatanodeDescriptor datanodeDescriptor = (DatanodeDescriptor)allDataNodes.get(replicaId);
+              DatanodeStorage dataStorage = null;
+              DatanodeStorageInfo[] storageMap = datanodeDescriptor.getStorageInfos();
+
+              for (DatanodeStorageInfo datanodeStorageInfo : storageMap) {
+                  DatanodeDescriptor datanodeDesc = datanodeStorageInfo.getDatanodeDescriptor();
+
+                  if (datanodeDesc.toString().equals(datanodeDescriptor.toString())) {
+                      dataStorage = new DatanodeStorage(datanodeStorageInfo.getStorageID(), datanodeStorageInfo.getState(), datanodeStorageInfo.getStorageType());
+                      break;
+                  }
+              }
+              positions[i] = new DatanodeStorageInfo(datanodeDescriptor, dataStorage);
+          }
+      }
+      return positions;
   }
 
   @Override
