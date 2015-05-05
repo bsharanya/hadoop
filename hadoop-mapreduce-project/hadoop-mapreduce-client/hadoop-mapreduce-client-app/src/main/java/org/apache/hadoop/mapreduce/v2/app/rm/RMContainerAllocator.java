@@ -1125,6 +1125,9 @@ public class RMContainerAllocator extends RMContainerRequestor
         private ContainerRequest assignWithoutLocality(Container allocated) {
             ContainerRequest assigned = null;
 
+            System.out.println();
+            System.out.println();
+            System.out.println("----------- ASSIGN WITHOUT LOCALITY START --------- ");
             Priority priority = allocated.getPriority();
             if (PRIORITY_FAST_FAIL_MAP.equals(priority)) {
                 LOG.info("Assigning container " + allocated + " to fast fail map");
@@ -1135,7 +1138,7 @@ public class RMContainerAllocator extends RMContainerRequestor
                 }
                 assigned = assignToReduce(allocated);
             }
-
+            System.out.println("----------- ASSIGN WITHOUT LOCALITY END --------- ");
             return assigned;
         }
 
@@ -1143,9 +1146,14 @@ public class RMContainerAllocator extends RMContainerRequestor
             Iterator<Container> it = allocatedContainers.iterator();
             while (it.hasNext()) {
                 Container allocated = it.next();
+                System.out.println();
+                System.out.println();
+                System.out.println("---------- ASSIGN CONTAINERS START ----------");
+                System.out.println(allocated.containerToNewString());
                 if (allocated.getContainerContext().get("taskAttemptID") == null || allocated.getContainerContext().get("taskAttemptID").equals("")) {
                     ContainerRequest assigned = assignWithoutLocality(allocated);
                     if (assigned != null) {
+                        System.out.println("#### REMOVE ASSIGNED CONTAINER ####");
                         containerAssigned(allocated, assigned);
                         it.remove();
                     }
@@ -1153,6 +1161,7 @@ public class RMContainerAllocator extends RMContainerRequestor
             }
 
             assignMapsWithLocality(allocatedContainers);
+            System.out.println("---------- ASSIGN CONTAINERS END ----------");
         }
 
         private ContainerRequest getContainerReqToReplace(Container allocated) {
@@ -1212,12 +1221,16 @@ public class RMContainerAllocator extends RMContainerRequestor
 
         private ContainerRequest assignToReduce(Container allocated) {
             ContainerRequest assigned = null;
+            System.out.println();
+            System.out.println("---------- ASSIGN TO REDUCE START --------");
             //try to assign to reduces if present
             if (assigned == null && reduces.size() > 0 && canAssignReduces()) {
                 TaskAttemptId tId = reduces.keySet().iterator().next();
                 assigned = reduces.remove(tId);
                 LOG.info("Assigned to reduce");
+                System.out.println("\t\t Assigned to reduce");
             }
+            System.out.println("---------- ASSIGN TO REDUCE END --------");
             return assigned;
         }
         @SuppressWarnings("unchecked")
@@ -1236,56 +1249,51 @@ public class RMContainerAllocator extends RMContainerRequestor
                 String host = allocated.getNodeId().getHost();
                 String rack = RackResolver.resolve(host).getNetworkLocation();
                 String containerTaskAttemptID = allocated.getContainerContext().get("taskAttemptID");
-                for (TaskAttemptId taskAttemptId : maps.keySet()) {
-//                    if (taskId.equals(taskAttemptId.getTaskId().toString())) {
-                    if (containerTaskAttemptID.equals(taskAttemptId.toString())) {
-                        ContainerRequest assigned = maps.remove(taskAttemptId);
-                        containerAssigned(allocated, assigned);
-                        it.remove();
-                        if (containerIsLocal(assigned, host)) {
-                            System.out.println("DATA LOCAL: Container Allocated: " + allocated.containerToNewString());
-                            JobCounterUpdateEvent jce =
-                                    new JobCounterUpdateEvent(assigned.attemptID.getTaskId().getJobId());
-                            jce.addCounterUpdate(JobCounter.DATA_LOCAL_MAPS, 1);
-                            eventHandler.handle(jce);
-                            hostLocalAssigned++;
-                            if (LOG.isDebugEnabled()) {
-                                LOG.debug("Assigned based on host match " + host);
-                            }
-                            LinkedList<TaskAttemptId> list = mapsHostMapping.get(host);
-                            for (TaskAttemptId attemptId : list) {
-                                if (containerTaskAttemptID.equals(attemptId.toString())) {
-                                    list.remove(attemptId);
+                if (containerTaskAttemptID != null ) {
+                    for (TaskAttemptId taskAttemptId : maps.keySet()) {
+                        if (containerTaskAttemptID.equals(taskAttemptId.toString())) {
+                            ContainerRequest assigned = maps.remove(taskAttemptId);
+                            containerAssigned(allocated, assigned);
+                            it.remove();
+                            if (containerIsLocal(assigned, host)) {
+                                System.out.println("DATA LOCAL: Container Allocated: " + allocated.containerToNewString());
+                                JobCounterUpdateEvent jce =
+                                        new JobCounterUpdateEvent(assigned.attemptID.getTaskId().getJobId());
+                                jce.addCounterUpdate(JobCounter.DATA_LOCAL_MAPS, 1);
+                                eventHandler.handle(jce);
+                                hostLocalAssigned++;
+                                if (LOG.isDebugEnabled()) {
+                                    LOG.debug("Assigned based on host match " + host);
+                                }
+                                LinkedList<TaskAttemptId> list = mapsHostMapping.get(host);
+                                list.remove(taskAttemptId);
+                            } else if (containerIsRackLocal(assigned, rack)) {
+                                System.out.println("RACK LOCAL: Container Allocated: " + allocated.containerToNewString());
+                                JobCounterUpdateEvent jce =
+                                        new JobCounterUpdateEvent(assigned.attemptID.getTaskId().getJobId());
+                                jce.addCounterUpdate(JobCounter.RACK_LOCAL_MAPS, 1);
+                                eventHandler.handle(jce);
+                                rackLocalAssigned++;
+                                if (LOG.isDebugEnabled()) {
+                                    LOG.debug("Assigned based on rack match " + host);
+                                }
+                                LinkedList<TaskAttemptId> list = mapsRackMapping.get(rack);
+                                list.remove(taskAttemptId);
+                            } else {
+                                System.out.println("ANY: Container Allocated: " + allocated.containerToNewString());
+                                JobCounterUpdateEvent jce =
+                                        new JobCounterUpdateEvent(assigned.attemptID.getTaskId().getJobId());
+                                jce.addCounterUpdate(JobCounter.OTHER_LOCAL_MAPS, 1);
+                                eventHandler.handle(jce);
+                                if (LOG.isDebugEnabled()) {
+                                    LOG.debug("Assigned based on * match");
                                 }
                             }
-                        } else if (containerIsRackLocal(assigned, rack)) {
-                            System.out.println("RACK LOCAL: Container Allocated: " + allocated.containerToNewString());
-                            JobCounterUpdateEvent jce =
-                                    new JobCounterUpdateEvent(assigned.attemptID.getTaskId().getJobId());
-                            jce.addCounterUpdate(JobCounter.RACK_LOCAL_MAPS, 1);
-                            eventHandler.handle(jce);
-                            rackLocalAssigned++;
-                            if (LOG.isDebugEnabled()) {
-                                LOG.debug("Assigned based on rack match " + host);
-                            }
-                            LinkedList<TaskAttemptId> list = mapsRackMapping.get(rack);
-                            for (TaskAttemptId attemptId : list) {
-                                if (containerTaskAttemptID.equals(attemptId.toString())) {
-                                    list.remove(attemptId);
-                                }
-                            }
-                        } else {
-                            System.out.println("ANY: Container Allocated: " + allocated.containerToNewString());
-                            JobCounterUpdateEvent jce =
-                                    new JobCounterUpdateEvent(assigned.attemptID.getTaskId().getJobId());
-                            jce.addCounterUpdate(JobCounter.OTHER_LOCAL_MAPS, 1);
-                            eventHandler.handle(jce);
-                            if (LOG.isDebugEnabled()) {
-                                LOG.debug("Assigned based on * match");
-                            }
+                            break;
                         }
-                        break;
                     }
+                } else {
+                    System.out.println("######## TaskAttemptID NULL ######### ");
                 }
             }
 //        String[] taskIdComponents = taskId.split("_");
