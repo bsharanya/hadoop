@@ -308,10 +308,10 @@ public class FSAppAttempt extends SchedulerApplicationAttempt
       Priority priority, ResourceRequest request,
       Container container) {
     // Update allowed locality level
-    System.out.println("------ FSAppAttempt: In allocate type: " + type.toString() + " ------");
+    //System.out.println("------ FSAppAttempt: In allocate type: " + type.toString() + " ------");
     NodeType allowed = allowedLocalityLevel.get(priority);
     if (allowed != null) {
-      System.out.println("------ FSAppAttempt: In allocate allowed: " + allowed.toString() + " ------");
+      //System.out.println("------ FSAppAttempt: In allocate allowed: " + allowed.toString() + " ------");
       if (allowed.equals(NodeType.OFF_SWITCH) &&
           (type.equals(NodeType.NODE_LOCAL) ||
               type.equals(NodeType.RACK_LOCAL))) {
@@ -489,10 +489,10 @@ public class FSAppAttempt extends SchedulerApplicationAttempt
   private Resource assignContainer(
       FSSchedulerNode node, ResourceRequest request, NodeType type,
       boolean reserved) {
-      System.out.println();
-      System.out.println();
-      System.out.println("----- FSAppAttempt assignContainer2 ResourceRequest: " + request.toString());
-      System.out.println("----- FSAppAttempt assignContainer2 type:" + type.toString());
+      //System.out.println();
+      //System.out.println();
+      //System.out.println("----- FSAppAttempt assignContainer2 ResourceRequest: " + request.toString());
+      //System.out.println("----- FSAppAttempt assignContainer2 type:" + type.toString());
     // How much does this request need?
     Resource capability = request.getCapability();
 
@@ -513,7 +513,7 @@ public class FSAppAttempt extends SchedulerApplicationAttempt
           allocate(type, node, request.getPriority(), request, container);
       if (allocatedContainer == null) {
         // Did the application need this resource?
-          System.out.println("FSAppAttempt: allocated container is null");
+          //System.out.println("FSAppAttempt: allocated container is null");
         if (reserved) {
           unreserve(request.getPriority(), node);
         }
@@ -534,7 +534,7 @@ public class FSAppAttempt extends SchedulerApplicationAttempt
         setAmRunning(true);
       }
 
-        System.out.println("----- FSAppAttempt: assignContainer success -------");
+        //System.out.println("----- FSAppAttempt: assignContainer success -------");
       return container.getResource();
     } else {
       if (!FairScheduler.fitsInMaxShare(getQueue(), capability)) {
@@ -579,25 +579,25 @@ public class FSAppAttempt extends SchedulerApplicationAttempt
             return Resources.none();
           }
         }
-        System.out.println();
-        System.out.println();
-        System.out.println("-------- FSAppAttempt assignContainer ----------");
+        //System.out.println();
+        //System.out.println();
+        //System.out.println("-------- FSAppAttempt assignContainer ----------");
         ResourceRequest rackLocalRequest = getResourceRequest(priority,
             node.getRackName());
-        System.out.println("FSAppAttempt RackName: " + node.getRackName());
+        //System.out.println("FSAppAttempt RackName: " + node.getRackName());
 
         if (rackLocalRequest!=null){
-            System.out.println("FSAppAttempt rackLocalRequest: " + rackLocalRequest.toString());
+            //System.out.println("FSAppAttempt rackLocalRequest: " + rackLocalRequest.toString());
         }
 
-        System.out.println();
-        System.out.println();
+        //System.out.println();
+        //System.out.println();
         ResourceRequest localRequest = getResourceRequest(priority,
             node.getNodeName());
-        System.out.println("FSAppAttempt RackName: " + node.getNodeName());
+        //System.out.println("FSAppAttempt RackName: " + node.getNodeName());
 
         if (localRequest!=null){
-            System.out.println("FSAppAttempt localRequest: " + localRequest.toString());
+            //System.out.println("FSAppAttempt localRequest: " + localRequest.toString());
         }
 
         if (localRequest != null && !localRequest.getRelaxLocality()) {
@@ -608,34 +608,34 @@ public class FSAppAttempt extends SchedulerApplicationAttempt
 
         NodeType allowedLocality;
         if (scheduler.isContinuousSchedulingEnabled()) {
-            System.out.println();
-            System.out.println();
-            System.out.println("---------- FSAppAttempt: getAllowedLocalityLevelByTime -----------");
-            System.out.println("NodeLocalityDelay: " + scheduler.getNodeLocalityDelayMs());
-            System.out.println("RackLocalityDelay: " + scheduler.getRackLocalityDelayMs());
+            //System.out.println();
+            //System.out.println();
+            //System.out.println("---------- FSAppAttempt: getAllowedLocalityLevelByTime -----------");
+            //System.out.println("NodeLocalityDelay: " + scheduler.getNodeLocalityDelayMs());
+            //System.out.println("RackLocalityDelay: " + scheduler.getRackLocalityDelayMs());
           allowedLocality = getAllowedLocalityLevelByTime(priority,
               scheduler.getNodeLocalityDelayMs(),
               scheduler.getRackLocalityDelayMs(),
               scheduler.getClock().getTime());
-            System.out.println("----- FSAppAttempt: allowedLocality: " +  allowedLocality.toString() + " -----");
+            //System.out.println("----- FSAppAttempt: allowedLocality: " +  allowedLocality.toString() + " -----");
         } else {
-            System.out.println();
-            System.out.println();
-            System.out.println("---------- FSAppAttempt: getAllowedLocalityLevel -----------");
+            //System.out.println();
+            //System.out.println();
+            //System.out.println("---------- FSAppAttempt: getAllowedLocalityLevel -----------");
           allowedLocality = getAllowedLocalityLevel(priority,
               scheduler.getNumClusterNodes(),
               scheduler.getNodeLocalityThreshold(),
               scheduler.getRackLocalityThreshold());
-            System.out.println("----- FSAppAttempt: allowedLocality: " +  allowedLocality.toString() + " -----");
+            //System.out.println("----- FSAppAttempt: allowedLocality: " +  allowedLocality.toString() + " -----");
         }
 
         if (rackLocalRequest != null && rackLocalRequest.getNumContainers() != 0
             && localRequest != null && localRequest.getNumContainers() != 0) {
-            System.out.println();
-            System.out.println();
-            System.out.println("------- FSAppAttempt: assignContainer NODE_LOCAL -----------");
-            System.out.println("FSAppAttempt: Local Containers: " + localRequest.getNumContainers());
-            System.out.println("FSAppAttempt: Rack Containers: " + rackLocalRequest.getNumContainers());
+            //System.out.println();
+            //System.out.println();
+            //System.out.println("------- FSAppAttempt: assignContainer NODE_LOCAL -----------");
+            //System.out.println("FSAppAttempt: Local Containers: " + localRequest.getNumContainers());
+            //System.out.println("FSAppAttempt: Rack Containers: " + rackLocalRequest.getNumContainers());
           return assignContainer(node, localRequest,
               NodeType.NODE_LOCAL, reserved);
         }
@@ -647,10 +647,10 @@ public class FSAppAttempt extends SchedulerApplicationAttempt
         if (rackLocalRequest != null && rackLocalRequest.getNumContainers() != 0
             && (allowedLocality.equals(NodeType.RACK_LOCAL) ||
             allowedLocality.equals(NodeType.OFF_SWITCH))) {
-            System.out.println();
-            System.out.println();
-            System.out.println("------- FSAppAttempt: assignContainer RACK_LOCAL -----------");
-            System.out.println("FSAppAttempt: Rack Containers: " + rackLocalRequest.getNumContainers());
+            //System.out.println();
+            //System.out.println();
+            //System.out.println("------- FSAppAttempt: assignContainer RACK_LOCAL -----------");
+            //System.out.println("FSAppAttempt: Rack Containers: " + rackLocalRequest.getNumContainers());
           return assignContainer(node, rackLocalRequest,
               NodeType.RACK_LOCAL, reserved);
         }
@@ -662,16 +662,16 @@ public class FSAppAttempt extends SchedulerApplicationAttempt
         }
 
         if(offSwitchRequest!=null){
-            System.out.println("FSAppAttempt: offSwitchRequest: " + offSwitchRequest.toString());
+            //System.out.println("FSAppAttempt: offSwitchRequest: " + offSwitchRequest.toString());
         }
         if (offSwitchRequest != null &&
             offSwitchRequest.getNumContainers() != 0) {
           if (!hasNodeOrRackLocalRequests(priority) ||
               allowedLocality.equals(NodeType.OFF_SWITCH)) {
-              System.out.println();
-              System.out.println();
-              System.out.println("------- FSAppAttempt: assignContainer OFF_SWITCH -----------");
-              System.out.println("FSAppAttempt: Any Containers: " + offSwitchRequest.getNumContainers());
+              //System.out.println();
+              //System.out.println();
+              //System.out.println("------- FSAppAttempt: assignContainer OFF_SWITCH -----------");
+              //System.out.println("FSAppAttempt: Any Containers: " + offSwitchRequest.getNumContainers());
             return assignContainer(
                 node, offSwitchRequest, NodeType.OFF_SWITCH, reserved);
           }

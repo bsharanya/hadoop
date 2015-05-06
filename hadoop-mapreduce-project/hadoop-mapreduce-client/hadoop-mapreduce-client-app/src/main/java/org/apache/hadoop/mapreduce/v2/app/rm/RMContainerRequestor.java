@@ -452,7 +452,7 @@ public abstract class RMContainerRequestor extends RMCommunicator {
       reqMap.put(capability, remoteRequest);
     }
     remoteRequest.setNumContainers(remoteRequest.getNumContainers() + 1);
-      System.out.println("---- Requestor: addResourceRequest remoteRequest: " + remoteRequest.toString() + "-----");
+      //System.out.println("---- Requestor: addResourceRequest remoteRequest: " + remoteRequest.toString() + "-----");
 
       // Note this down for next interaction with ResourceManager
     addResourceRequestToAsk(remoteRequest);
