@@ -173,11 +173,11 @@ public class AppSchedulingInfo {
         request.setNumContainers(lastRequest.getNumContainers() + 1);
       }
 
-        System.out.println();
-        System.out.println();
-        System.out.println("------ AppScheduling Info updateResourceRequests ----------");
-        System.out.println("ResourceName: " + resourceName);
-        System.out.println("ResourceRequest: " + request.toString());
+        //System.out.println();
+        //System.out.println();
+        //System.out.println("------ AppScheduling Info updateResourceRequests ----------");
+        //System.out.println("ResourceName: " + resourceName);
+        //System.out.println("ResourceRequest: " + request.toString());
       asks.put(resourceName, request);
       if (updatePendingResources) {
         
@@ -239,13 +239,13 @@ public class AppSchedulingInfo {
   synchronized public ResourceRequest getResourceRequest(Priority priority,
       String resourceName) {
     Map<String, ResourceRequest> nodeRequests = requests.get(priority);
-      System.out.println();
-      System.out.println();
-      System.out.println("----- AppSchedulingInfo: getResourceRequest ------");
-      System.out.println("Incoming resourceName: " + resourceName);
+      //System.out.println();
+      //System.out.println();
+      //System.out.println("----- AppSchedulingInfo: getResourceRequest ------");
+      //System.out.println("Incoming resourceName: " + resourceName);
       for (String reSrcName : nodeRequests.keySet()) {
-          System.out.println("ResourceName: " + reSrcName);
-          System.out.println("ResourceRequest: " + nodeRequests.get(reSrcName).toString());
+          //System.out.println("ResourceName: " + reSrcName);
+          //System.out.println("ResourceRequest: " + nodeRequests.get(reSrcName).toString());
       }
     return (nodeRequests == null) ? null : nodeRequests.get(resourceName);
   }
@@ -314,9 +314,9 @@ public class AppSchedulingInfo {
   synchronized private void allocateNodeLocal(SchedulerNode node,
       Priority priority, ResourceRequest nodeLocalRequest, Container container,
       List<ResourceRequest> resourceRequests) {
-      System.out.println();
-      System.out.println();
-      System.out.println("------ AppSchedulingInfo: allocateNodeLocal -------");
+      //System.out.println();
+      //System.out.println();
+      //System.out.println("------ AppSchedulingInfo: allocateNodeLocal -------");
     // Update future requirements
     decResourceRequest(node.getNodeName(), priority, nodeLocalRequest);
 
@@ -352,9 +352,9 @@ public class AppSchedulingInfo {
   synchronized private void allocateRackLocal(SchedulerNode node,
       Priority priority, ResourceRequest rackLocalRequest, Container container,
       List<ResourceRequest> resourceRequests) {
-      System.out.println();
-      System.out.println();
-      System.out.println("------ AppSchedulingInfo: allocateRackLocal ------");
+      //System.out.println();
+      //System.out.println();
+      //System.out.println("------ AppSchedulingInfo: allocateRackLocal ------");
     // Update future requirements
     decResourceRequest(node.getRackName(), priority, rackLocalRequest);
     
@@ -377,9 +377,9 @@ public class AppSchedulingInfo {
   synchronized private void allocateOffSwitch(SchedulerNode node,
       Priority priority, ResourceRequest offSwitchRequest, Container container,
       List<ResourceRequest> resourceRequests) {
-      System.out.println();
-      System.out.println();
-      System.out.println("------- AppSchedulingInfo: allocateOffSwitch -------");
+      //System.out.println();
+      //System.out.println();
+      //System.out.println("------- AppSchedulingInfo: allocateOffSwitch -------");
     // Update future requirements
     decrementOutstanding(offSwitchRequest);
     // Update cloned OffRack requests for recovery
