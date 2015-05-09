@@ -141,18 +141,12 @@ public class BlockPlacementPolicyDefault extends BlockPlacementPolicy {
           allDataNodes.addAll(leavesRackOne);
           allDataNodes.addAll(leavesRackTwo);
 
-          System.out.println();
-          System.out.println();
-          System.out.println("--------- CHOOSE TARGET----------");
-          System.out.println("\t\tallDataNodes size: " + allDataNodes.size());
           for (Node allDataNode : allDataNodes) {
               System.out.println(allDataNode.toString());
           }
           for (int i = 0; i < numOfReplicas; i++) {
               if ( i == numOfReplicas-1 ) {
                   int replicaId = (mainReplica + rackSize) % clusterMap.getNumOfLeaves();
-                  System.out.println("\t\tRACK LOCAL REPLICA");
-                  System.out.println("\t\treplicaId: " + replicaId);
                   DatanodeDescriptor datanodeDescriptor = (DatanodeDescriptor)allDataNodes.get(replicaId);
                   DatanodeStorage dataStorage = null;
                   DatanodeStorageInfo[] storageMap = datanodeDescriptor.getStorageInfos();
@@ -169,8 +163,6 @@ public class BlockPlacementPolicyDefault extends BlockPlacementPolicy {
 
               } else {
                   int replicaId = (mainReplica + i) % clusterMap.getNumOfLeaves();
-                  System.out.println("\t\tFILE ID LOCAL REPLICA");
-                  System.out.println("\t\treplicaId: " + replicaId);
                   DatanodeDescriptor datanodeDescriptor = (DatanodeDescriptor)allDataNodes.get(replicaId);
                   DatanodeStorage dataStorage = null;
                   DatanodeStorageInfo[] storageMap = datanodeDescriptor.getStorageInfos();
