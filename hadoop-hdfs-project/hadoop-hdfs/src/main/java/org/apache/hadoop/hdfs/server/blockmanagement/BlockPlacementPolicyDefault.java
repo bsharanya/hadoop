@@ -102,85 +102,93 @@ public class BlockPlacementPolicyDefault extends BlockPlacementPolicy {
         DFSConfigKeys.DFS_NAMENODE_STALE_DATANODE_INTERVAL_DEFAULT);
   }
 
-  // DATA PLACEMENT ORIGINAL
-  @Override
-  public DatanodeStorageInfo[] chooseTarget(String srcPath,
-                                    int numOfReplicas,
-                                    Node writer,
-                                    List<DatanodeStorageInfo> chosenNodes,
-                                    boolean returnChosenNodes,
-                                    Set<Node> excludedNodes,
-                                    long blocksize,
-                                    final BlockStoragePolicy storagePolicy) {
-    return chooseTarget(numOfReplicas, writer, chosenNodes, returnChosenNodes,
-        excludedNodes, blocksize, storagePolicy);
-  }
+//  // DATA PLACEMENT ORIGINAL
+//  @Override
+//  public DatanodeStorageInfo[] chooseTarget(String srcPath,
+//                                    int numOfReplicas,
+//                                    Node writer,
+//                                    List<DatanodeStorageInfo> chosenNodes,
+//                                    boolean returnChosenNodes,
+//                                    Set<Node> excludedNodes,
+//                                    long blocksize,
+//                                    final BlockStoragePolicy storagePolicy) {
+//    return chooseTarget(numOfReplicas, writer, chosenNodes, returnChosenNodes,
+//        excludedNodes, blocksize, storagePolicy);
+//  }
 
 
 //  ADS CHANGES
-//  @Override
-//  public DatanodeStorageInfo[] chooseTarget(String srcPath,
-//                                            int numOfReplicas,
-//                                            Node writer,
-//                                            List<DatanodeStorageInfo> chosenNodes,
-//                                            boolean returnChosenNodes,
-//                                            Set<Node> excludedNodes,
-//                                            long blocksize,
-//                                            final BlockStoragePolicy storagePolicy) {
-//
-//      DatanodeStorageInfo[] positions = chooseTarget(numOfReplicas, writer, chosenNodes, returnChosenNodes, excludedNodes, blocksize, storagePolicy);
-//
-//      if (srcPath.contains("attempt") && srcPath.contains("part")) {
-//          positions = new DatanodeStorageInfo[numOfReplicas];
-//          int fileId = Integer.parseInt(srcPath.split("part-")[1].trim());
-//          int mainReplica = fileId % clusterMap.getNumOfLeaves();
-//          List<Node> allDataNodes = new ArrayList<Node>();
-//          List<Node> leavesRackOne = clusterMap.getLeaves("/dc1/rack1");
-//          List<Node> leavesRackTwo = clusterMap.getLeaves("/dc1/rack2");
-//          int rackSize = leavesRackOne.size();
-//          if (leavesRackOne != null) {
-//              allDataNodes.addAll(leavesRackOne);
-//          }
-//          if (leavesRackTwo != null) {
-//              allDataNodes.addAll(leavesRackTwo);
-//          }
-//          for (int i = 0; i < numOfReplicas; i++) {
-//              if ( i == numOfReplicas-1 ) {
-//                  int replicaId = (mainReplica + rackSize) % clusterMap.getNumOfLeaves();
-//                  DatanodeDescriptor datanodeDescriptor = (DatanodeDescriptor)allDataNodes.get(replicaId);
-//                  DatanodeStorage dataStorage = null;
-//                  DatanodeStorageInfo[] storageMap = datanodeDescriptor.getStorageInfos();
-//
-//                  for (DatanodeStorageInfo datanodeStorageInfo : storageMap) {
-//                      DatanodeDescriptor datanodeDesc = datanodeStorageInfo.getDatanodeDescriptor();
-//
-//                      if (datanodeDesc.toString().equals(datanodeDescriptor.toString())) {
-//                          dataStorage = new DatanodeStorage(datanodeStorageInfo.getStorageID(), datanodeStorageInfo.getState(), datanodeStorageInfo.getStorageType());
-//                          break;
-//                      }
-//                  }
-//                  positions[i] = new DatanodeStorageInfo(datanodeDescriptor, dataStorage);
-//
-//              } else {
-//                  int replicaId = (mainReplica + i) % clusterMap.getNumOfLeaves();
-//                  DatanodeDescriptor datanodeDescriptor = (DatanodeDescriptor)allDataNodes.get(replicaId);
-//                  DatanodeStorage dataStorage = null;
-//                  DatanodeStorageInfo[] storageMap = datanodeDescriptor.getStorageInfos();
-//
-//                  for (DatanodeStorageInfo datanodeStorageInfo : storageMap) {
-//                      DatanodeDescriptor datanodeDesc = datanodeStorageInfo.getDatanodeDescriptor();
-//
-//                      if (datanodeDesc.toString().equals(datanodeDescriptor.toString())) {
-//                          dataStorage = new DatanodeStorage(datanodeStorageInfo.getStorageID(), datanodeStorageInfo.getState(), datanodeStorageInfo.getStorageType());
-//                          break;
-//                      }
-//                  }
-//                  positions[i] = new DatanodeStorageInfo(datanodeDescriptor, dataStorage);
-//              }
-//          }
-//      }
-//      return positions;
-//  }
+  @Override
+  public DatanodeStorageInfo[] chooseTarget(String srcPath,
+                                            int numOfReplicas,
+                                            Node writer,
+                                            List<DatanodeStorageInfo> chosenNodes,
+                                            boolean returnChosenNodes,
+                                            Set<Node> excludedNodes,
+                                            long blocksize,
+                                            final BlockStoragePolicy storagePolicy) {
+
+      DatanodeStorageInfo[] positions = chooseTarget(numOfReplicas, writer, chosenNodes, returnChosenNodes, excludedNodes, blocksize, storagePolicy);
+
+      if (srcPath.contains("attempt") && srcPath.contains("part")) {
+          positions = new DatanodeStorageInfo[numOfReplicas];
+          int fileId = Integer.parseInt(srcPath.split("part-")[1].trim());
+          int mainReplica = fileId % clusterMap.getNumOfLeaves();
+          List<Node> allDataNodes = new ArrayList<Node>();
+          List<Node> leavesRackOne = clusterMap.getLeaves("/dc1/rack1");
+          List<Node> leavesRackTwo = clusterMap.getLeaves("/dc1/rack2");
+          int rackSize = leavesRackOne.size();
+          allDataNodes.addAll(leavesRackOne);
+          allDataNodes.addAll(leavesRackTwo);
+
+          System.out.println();
+          System.out.println();
+          System.out.println("--------- CHOOSE TARGET----------");
+          System.out.println("\t\tallDataNodes size: " + allDataNodes.size());
+          for (Node allDataNode : allDataNodes) {
+              System.out.println(allDataNode.toString());
+          }
+          for (int i = 0; i < numOfReplicas; i++) {
+              if ( i == numOfReplicas-1 ) {
+                  int replicaId = (mainReplica + rackSize) % clusterMap.getNumOfLeaves();
+                  System.out.println("\t\tRACK LOCAL REPLICA");
+                  System.out.println("\t\treplicaId: " + replicaId);
+                  DatanodeDescriptor datanodeDescriptor = (DatanodeDescriptor)allDataNodes.get(replicaId);
+                  DatanodeStorage dataStorage = null;
+                  DatanodeStorageInfo[] storageMap = datanodeDescriptor.getStorageInfos();
+
+                  for (DatanodeStorageInfo datanodeStorageInfo : storageMap) {
+                      DatanodeDescriptor datanodeDesc = datanodeStorageInfo.getDatanodeDescriptor();
+
+                      if (datanodeDesc.toString().equals(datanodeDescriptor.toString())) {
+                          dataStorage = new DatanodeStorage(datanodeStorageInfo.getStorageID(), datanodeStorageInfo.getState(), datanodeStorageInfo.getStorageType());
+                          break;
+                      }
+                  }
+                  positions[i] = new DatanodeStorageInfo(datanodeDescriptor, dataStorage);
+
+              } else {
+                  int replicaId = (mainReplica + i) % clusterMap.getNumOfLeaves();
+                  System.out.println("\t\tFILE ID LOCAL REPLICA");
+                  System.out.println("\t\treplicaId: " + replicaId);
+                  DatanodeDescriptor datanodeDescriptor = (DatanodeDescriptor)allDataNodes.get(replicaId);
+                  DatanodeStorage dataStorage = null;
+                  DatanodeStorageInfo[] storageMap = datanodeDescriptor.getStorageInfos();
+
+                  for (DatanodeStorageInfo datanodeStorageInfo : storageMap) {
+                      DatanodeDescriptor datanodeDesc = datanodeStorageInfo.getDatanodeDescriptor();
+
+                      if (datanodeDesc.toString().equals(datanodeDescriptor.toString())) {
+                          dataStorage = new DatanodeStorage(datanodeStorageInfo.getStorageID(), datanodeStorageInfo.getState(), datanodeStorageInfo.getStorageType());
+                          break;
+                      }
+                  }
+                  positions[i] = new DatanodeStorageInfo(datanodeDescriptor, dataStorage);
+              }
+          }
+      }
+      return positions;
+  }
 
   @Override
   DatanodeStorageInfo[] chooseTarget(String src,
