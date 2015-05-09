@@ -100,21 +100,21 @@ public class BlockPlacementPolicyDefault extends BlockPlacementPolicy {
   }
 
 
-  @Override
-  public DatanodeStorageInfo[] chooseTarget(String srcPath,
-                                    int numOfReplicas,
-                                    Node writer,
-                                    List<DatanodeStorageInfo> chosenNodes,
-                                    boolean returnChosenNodes,
-                                    Set<Node> excludedNodes,
-                                    long blocksize,
-                                    final BlockStoragePolicy storagePolicy) {
-    return chooseTarget(numOfReplicas, writer, chosenNodes, returnChosenNodes,
-        excludedNodes, blocksize, storagePolicy);
-    }
+//  @Override
+//  public DatanodeStorageInfo[] chooseTarget(String srcPath,
+//                                    int numOfReplicas,
+//                                    Node writer,
+//                                    List<DatanodeStorageInfo> chosenNodes,
+//                                    boolean returnChosenNodes,
+//                                    Set<Node> excludedNodes,
+//                                    long blocksize,
+//                                    final BlockStoragePolicy storagePolicy) {
+//    return chooseTarget(numOfReplicas, writer, chosenNodes, returnChosenNodes,
+//        excludedNodes, blocksize, storagePolicy);
+//    }
 
 
-//  //ADS CHANGES
+//  //ADS CHANGES for i i+1 i+n
 //  @Override
 //  public DatanodeStorageInfo[] chooseTarget(String srcPath,
 //                                    int numOfReplicas,
@@ -178,6 +178,52 @@ public class BlockPlacementPolicyDefault extends BlockPlacementPolicy {
 //      }
 //      return positions;
 //  }
+
+  //ADS CHANGES for i i+i i+2
+  @Override
+  public DatanodeStorageInfo[] chooseTarget(String srcPath,
+                                    int numOfReplicas,
+                                    Node writer,
+                                    List<DatanodeStorageInfo> chosenNodes,
+                                    boolean returnChosenNodes,
+                                    Set<Node> excludedNodes,
+                                    long blocksize,
+                                    final BlockStoragePolicy storagePolicy) {
+
+      DatanodeStorageInfo[] positions = chooseTarget(numOfReplicas, writer, chosenNodes, returnChosenNodes, excludedNodes, blocksize, storagePolicy);
+
+      if (srcPath.contains("attempt") && srcPath.contains("part")) {
+          positions = new DatanodeStorageInfo[numOfReplicas];
+          int fileId = Integer.parseInt(srcPath.split("part-")[1].trim());
+          int mainReplica = fileId % clusterMap.getNumOfLeaves();
+          List<Node> allDataNodes = new ArrayList<Node>();
+          List<Node> leavesRackOne = clusterMap.getLeaves("/dc1/rack1");
+          List<Node> leavesRackTwo = clusterMap.getLeaves("/dc1/rack2");
+          if (leavesRackOne != null) {
+              allDataNodes.addAll(leavesRackOne);
+          }
+          if (leavesRackTwo != null) {
+              allDataNodes.addAll(leavesRackTwo);
+          }
+          for (int i = 0; i < numOfReplicas; i++) {
+              int replicaId = (mainReplica + i) % clusterMap.getNumOfLeaves();
+              DatanodeDescriptor datanodeDescriptor = (DatanodeDescriptor)allDataNodes.get(replicaId);
+              DatanodeStorage dataStorage = null;
+              DatanodeStorageInfo[] storageMap = datanodeDescriptor.getStorageInfos();
+
+              for (DatanodeStorageInfo datanodeStorageInfo : storageMap) {
+                  DatanodeDescriptor datanodeDesc = datanodeStorageInfo.getDatanodeDescriptor();
+
+                  if (datanodeDesc.toString().equals(datanodeDescriptor.toString())) {
+                      dataStorage = new DatanodeStorage(datanodeStorageInfo.getStorageID(), datanodeStorageInfo.getState(), datanodeStorageInfo.getStorageType());
+                      break;
+                  }
+              }
+              positions[i] = new DatanodeStorageInfo(datanodeDescriptor, dataStorage);
+          }
+      }
+      return positions;
+  }
 
   @Override
   DatanodeStorageInfo[] chooseTarget(String src,
