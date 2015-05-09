@@ -1409,8 +1409,8 @@ public class LeafQueue extends AbstractCSQueue {
       MutableObject allocatedContainer) {
     if (canAssign(application, priority, node, NodeType.NODE_LOCAL, 
         reservedContainer)) {
-        System.out.println(" ");
-        System.out.println("----- LOCAL -----");
+        //System.out.println(" ");
+        //System.out.println("----- LOCAL -----");
       return assignContainer(clusterResource, node, application, priority,
           nodeLocalResourceRequest, NodeType.NODE_LOCAL, reservedContainer,
           needToUnreserve, allocatedContainer);
@@ -1426,8 +1426,8 @@ public class LeafQueue extends AbstractCSQueue {
       MutableObject allocatedContainer) {
     if (canAssign(application, priority, node, NodeType.RACK_LOCAL,
         reservedContainer)) {
-        System.out.println(" ");
-        System.out.println("----- RACK -----");
+        //System.out.println(" ");
+        //System.out.println("----- RACK -----");
       return assignContainer(clusterResource, node, application, priority,
           rackLocalResourceRequest, NodeType.RACK_LOCAL, reservedContainer,
           needToUnreserve, allocatedContainer);
@@ -1443,8 +1443,8 @@ public class LeafQueue extends AbstractCSQueue {
       MutableObject allocatedContainer) {
     if (canAssign(application, priority, node, NodeType.OFF_SWITCH,
         reservedContainer)) {
-        System.out.println(" ");
-        System.out.println("----- ANY -----");
+        //System.out.println(" ");
+        //System.out.println("----- ANY -----");
       return assignContainer(clusterResource, node, application, priority,
           offSwitchResourceRequest, NodeType.OFF_SWITCH, reservedContainer,
           needToUnreserve, allocatedContainer);
@@ -1646,11 +1646,11 @@ public class LeafQueue extends AbstractCSQueue {
                 return Resources.none();
             }
 
-            System.out.println("------------------------ LEAF QUEUE START ------------------------");
-            System.out.println("Resource Request: " + request.requestResourceToNewString());
-            System.out.println("Container Allocated: " + container.containerToNewString());
-            System.out.println("------------------------ LEAF QUEUE END ------------------------");
-            System.out.println(" ");
+            //System.out.println("------------------------ LEAF QUEUE START ------------------------");
+            //System.out.println("Resource Request: " + request.requestResourceToNewString());
+            //System.out.println("Container Allocated: " + container.containerToNewString());
+            //System.out.println("------------------------ LEAF QUEUE END ------------------------");
+            //System.out.println(" ");
         }
 
         // Inform the application

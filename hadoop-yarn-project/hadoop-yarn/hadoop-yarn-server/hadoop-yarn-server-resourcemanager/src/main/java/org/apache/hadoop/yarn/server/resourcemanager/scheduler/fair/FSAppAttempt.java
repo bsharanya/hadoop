@@ -483,7 +483,7 @@ public class FSAppAttempt extends SchedulerApplicationAttempt
   private Resource assignContainer(
       FSSchedulerNode node, ResourceRequest request, NodeType type,
       boolean reserved) {
-    System.out.println("--------- ASSIGN-CONTAINER ADD ATTEMPT ID TO CONTAINER --------" );
+    //System.out.println("--------- ASSIGN-CONTAINER ADD ATTEMPT ID TO CONTAINER --------" );
 
     // How much does this request need?
     Resource capability = request.getCapability();
@@ -548,11 +548,11 @@ public class FSAppAttempt extends SchedulerApplicationAttempt
               return Resources.none();
           }
 
-          System.out.println("------------------------ LEAF QUEUE START ------------------------");
-          System.out.println("Resource Request: " + request.requestResourceToNewString());
-          System.out.println("Container Allocated: " + container.containerToNewString());
-          System.out.println("------------------------ LEAF QUEUE END ------------------------");
-          System.out.println(" ");
+          //System.out.println("------------------------ LEAF QUEUE START ------------------------");
+          //System.out.println("Resource Request: " + request.requestResourceToNewString());
+          //System.out.println("Container Allocated: " + container.containerToNewString());
+          //System.out.println("------------------------ LEAF QUEUE END ------------------------");
+          //System.out.println(" ");
       }
 
       return container.getResource();
@@ -590,9 +590,9 @@ public class FSAppAttempt extends SchedulerApplicationAttempt
             !hasContainerForNode(priority, node)) {
           continue;
         }
-          System.out.println();
-          System.out.println();
-          System.out.println("--------- ASSIGN-CONTAINER DELAY MECHANISM ----------");
+          //System.out.println();
+          //System.out.println();
+          //System.out.println("--------- ASSIGN-CONTAINER DELAY MECHANISM ----------");
         addSchedulingOpportunity(priority);
 
         // Check the AM resource usage for the leaf queue
@@ -606,13 +606,13 @@ public class FSAppAttempt extends SchedulerApplicationAttempt
             node.getRackName());
 
         if (rackLocalRequest!=null){
-            System.out.println("RackLocalRequest: " + rackLocalRequest.requestResourceToNewString());
+            //System.out.println("RackLocalRequest: " + rackLocalRequest.requestResourceToNewString());
         }
         ResourceRequest localRequest = getResourceRequest(priority,
             node.getNodeName());
 
         if (localRequest!=null){
-            System.out.println("NodeLocalRequest: " + localRequest.requestResourceToNewString());
+            //System.out.println("NodeLocalRequest: " + localRequest.requestResourceToNewString());
         }
 
         if (localRequest != null && !localRequest.getRelaxLocality()) {
@@ -622,22 +622,22 @@ public class FSAppAttempt extends SchedulerApplicationAttempt
 
         NodeType allowedLocality;
         if (scheduler.isContinuousSchedulingEnabled()) {
-            System.out.println(" ---- ContinuousSchedulingEnabled ------");
-            System.out.println("NodeLocalityDelay: " + scheduler.getNodeLocalityDelayMs());
-            System.out.println("RackLocalityDelay: " + scheduler.getRackLocalityDelayMs());
+            //System.out.println(" ---- ContinuousSchedulingEnabled ------");
+            //System.out.println("NodeLocalityDelay: " + scheduler.getNodeLocalityDelayMs());
+            //System.out.println("RackLocalityDelay: " + scheduler.getRackLocalityDelayMs());
           allowedLocality = getAllowedLocalityLevelByTime(priority,
               scheduler.getNodeLocalityDelayMs(),
               scheduler.getRackLocalityDelayMs(),
               scheduler.getClock().getTime());
-            System.out.println("AllowedLocality: " + allowedLocality.toString());
+            //System.out.println("AllowedLocality: " + allowedLocality.toString());
         } else {
-          System.out.println();
-          System.out.println(" ---- getAllowedLocalityLevel ---- ");
+          //System.out.println();
+          //System.out.println(" ---- getAllowedLocalityLevel ---- ");
           allowedLocality = getAllowedLocalityLevel(priority,
               scheduler.getNumClusterNodes(),
               scheduler.getNodeLocalityThreshold(),
               scheduler.getRackLocalityThreshold());
-            System.out.println("AllowedLocality: " + allowedLocality.toString());
+            //System.out.println("AllowedLocality: " + allowedLocality.toString());
         }
 
 
@@ -661,7 +661,7 @@ public class FSAppAttempt extends SchedulerApplicationAttempt
         ResourceRequest offSwitchRequest =
             getResourceRequest(priority, ResourceRequest.ANY);
         if (offSwitchRequest!=null){
-            System.out.println("offSwitchRequest: " + offSwitchRequest.requestResourceToNewString());
+            //System.out.println("offSwitchRequest: " + offSwitchRequest.requestResourceToNewString());
         }
 
         if (offSwitchRequest != null && !offSwitchRequest.getRelaxLocality()) {

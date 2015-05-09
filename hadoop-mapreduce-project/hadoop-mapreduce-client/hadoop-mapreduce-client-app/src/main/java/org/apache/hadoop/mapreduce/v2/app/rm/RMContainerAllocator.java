@@ -1125,9 +1125,9 @@ public class RMContainerAllocator extends RMContainerRequestor
         private ContainerRequest assignWithoutLocality(Container allocated) {
             ContainerRequest assigned = null;
 
-            System.out.println();
-            System.out.println();
-            System.out.println("----------- ASSIGN WITHOUT LOCALITY START --------- ");
+            //System.out.println();
+            //System.out.println();
+            //System.out.println("----------- ASSIGN WITHOUT LOCALITY START --------- ");
             Priority priority = allocated.getPriority();
             if (PRIORITY_FAST_FAIL_MAP.equals(priority)) {
                 LOG.info("Assigning container " + allocated + " to fast fail map");
@@ -1138,7 +1138,7 @@ public class RMContainerAllocator extends RMContainerRequestor
                 }
                 assigned = assignToReduce(allocated);
             }
-            System.out.println("----------- ASSIGN WITHOUT LOCALITY END --------- ");
+            //System.out.println("----------- ASSIGN WITHOUT LOCALITY END --------- ");
             return assigned;
         }
 
@@ -1146,14 +1146,14 @@ public class RMContainerAllocator extends RMContainerRequestor
             Iterator<Container> it = allocatedContainers.iterator();
             while (it.hasNext()) {
                 Container allocated = it.next();
-                System.out.println();
-                System.out.println();
-                System.out.println("---------- ASSIGN CONTAINERS START ----------");
-                System.out.println(allocated.containerToNewString());
+                //System.out.println();
+                //System.out.println();
+                //System.out.println("---------- ASSIGN CONTAINERS START ----------");
+                //System.out.println(allocated.containerToNewString());
                 if (allocated.getContainerContext().get("taskAttemptID") == null || allocated.getContainerContext().get("taskAttemptID").equals("")) {
                     ContainerRequest assigned = assignWithoutLocality(allocated);
                     if (assigned != null) {
-                        System.out.println("#### REMOVE ASSIGNED CONTAINER ####");
+                        //System.out.println("#### REMOVE ASSIGNED CONTAINER ####");
                         containerAssigned(allocated, assigned);
                         it.remove();
                     }
@@ -1161,7 +1161,7 @@ public class RMContainerAllocator extends RMContainerRequestor
             }
 
             assignMapsWithLocality(allocatedContainers);
-            System.out.println("---------- ASSIGN CONTAINERS END ----------");
+            //System.out.println("---------- ASSIGN CONTAINERS END ----------");
         }
 
         private ContainerRequest getContainerReqToReplace(Container allocated) {
@@ -1221,23 +1221,23 @@ public class RMContainerAllocator extends RMContainerRequestor
 
         private ContainerRequest assignToReduce(Container allocated) {
             ContainerRequest assigned = null;
-            System.out.println();
-            System.out.println("---------- ASSIGN TO REDUCE START --------");
+            //System.out.println();
+            //System.out.println("---------- ASSIGN TO REDUCE START --------");
             //try to assign to reduces if present
             if (assigned == null && reduces.size() > 0 && canAssignReduces()) {
                 TaskAttemptId tId = reduces.keySet().iterator().next();
                 assigned = reduces.remove(tId);
                 LOG.info("Assigned to reduce");
-                System.out.println("\t\t Assigned to reduce");
+                //System.out.println("\t\t Assigned to reduce");
             }
-            System.out.println("---------- ASSIGN TO REDUCE END --------");
+            //System.out.println("---------- ASSIGN TO REDUCE END --------");
             return assigned;
         }
         @SuppressWarnings("unchecked")
         private void assignMapsWithLocality(List<Container> allocatedContainers) {
             // ADS CHANGES
-            System.out.println("");
-            System.out.println("----------- ASSIGN MAPS WITH LOCALITY START -----------");
+            //System.out.println("");
+            //System.out.println("----------- ASSIGN MAPS WITH LOCALITY START -----------");
             // try to assign to all nodes first to match node local
             Iterator<Container> it = allocatedContainers.iterator();
             while (it.hasNext() && maps.size() > 0 && canAssignMaps()) {
@@ -1256,7 +1256,7 @@ public class RMContainerAllocator extends RMContainerRequestor
                             containerAssigned(allocated, assigned);
                             it.remove();
                             if (containerIsLocal(assigned, host)) {
-                                System.out.println("DATA LOCAL: Container Allocated: " + allocated.containerToNewString());
+                                //System.out.println("DATA LOCAL: Container Allocated: " + allocated.containerToNewString());
                                 JobCounterUpdateEvent jce =
                                         new JobCounterUpdateEvent(assigned.attemptID.getTaskId().getJobId());
                                 jce.addCounterUpdate(JobCounter.DATA_LOCAL_MAPS, 1);
@@ -1268,7 +1268,7 @@ public class RMContainerAllocator extends RMContainerRequestor
                                 LinkedList<TaskAttemptId> list = mapsHostMapping.get(host);
                                 list.remove(taskAttemptId);
                             } else if (containerIsRackLocal(assigned, rack)) {
-                                System.out.println("RACK LOCAL: Container Allocated: " + allocated.containerToNewString());
+                                //System.out.println("RACK LOCAL: Container Allocated: " + allocated.containerToNewString());
                                 JobCounterUpdateEvent jce =
                                         new JobCounterUpdateEvent(assigned.attemptID.getTaskId().getJobId());
                                 jce.addCounterUpdate(JobCounter.RACK_LOCAL_MAPS, 1);
@@ -1280,7 +1280,7 @@ public class RMContainerAllocator extends RMContainerRequestor
                                 LinkedList<TaskAttemptId> list = mapsRackMapping.get(rack);
                                 list.remove(taskAttemptId);
                             } else {
-                                System.out.println("ANY: Container Allocated: " + allocated.containerToNewString());
+                                //System.out.println("ANY: Container Allocated: " + allocated.containerToNewString());
                                 JobCounterUpdateEvent jce =
                                         new JobCounterUpdateEvent(assigned.attemptID.getTaskId().getJobId());
                                 jce.addCounterUpdate(JobCounter.OTHER_LOCAL_MAPS, 1);
@@ -1371,8 +1371,8 @@ public class RMContainerAllocator extends RMContainerRequestor
 //                    LOG.debug("Assigned based on * match");
 //                }
 //            }
-            System.out.println("----------- ASSIGN MAPS WITH LOCALITY END -----------");
-            System.out.println("");
+            //System.out.println("----------- ASSIGN MAPS WITH LOCALITY END -----------");
+            //System.out.println("");
         }
 
 
